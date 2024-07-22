@@ -24,7 +24,7 @@ clear all
 
 	if c(username)=="chloeeast" {  		// for Chloe's computer
 			global dir "/Users/chloeeast/Dropbox"	 	 	
-			global dofiles "/Users/chloeeast/Documents/GitHub/JobLosers_SafetyNet/makedata"	 	 	
+			global dofiles "/Users/chloeeast/Documents/GitHub/East_Simon/makedata"	 	 	
 		} 
 		else{ 
 			if c(username)=="Chloe" {  		// for Chloe's laptop
@@ -34,11 +34,11 @@ clear all
 		else 
 			if c(username)=="das13016" {  //for David's laptop
 			global dir "\Users\das13016\Dropbox\Research and Referee work\papers\Under Review"
-			global dofiles "/Users/das13016/Documents/GitHub/JobLosers_SafetyNet/makedata"
+			global dofiles "/Users/das13016/Documents/GitHub/East_Simon/makedata"
 			}
 		else if c(username)=="elizabeth" {
 			global dir "/Users/elizabeth/Dropbox"
-			global dofiles "/Users/elizabeth/Documents/GitHub/JobLosers_SafetyNet/makedata"
+			global dofiles "/Users/elizabeth/Documents/GitHub/East_Simon/makedata"
 		}
 			} 
 
@@ -49,7 +49,7 @@ global samples "$dir/Intergen Sipp/child SIPP longterm/analysis/samples/JobLoser
 global ek_rawdata "$dir\child SIPP longterm\literature\Jobloss Papers\Elira_JMP_datafiles\Data\Raw\StateYear"
 global ek_outputdata "$dir\Intergen Sipp\child SIPP longterm\literature\Jobloss Papers\Elira_JMP_datafiles\Data\RegData"
 global rv_outputdata "$dir/child SIPP longterm/analysis/dofiles/Jobloss/Aux data and setupcode/Safety Net Calculators/"
-global outputlog "/Users/das13016/Documents/GitHub/JobLosers_SafetyNet/logs"
+global outputlog "/Users/das13016/Documents/GitHub/East_Simon/logs"
 global joblessnessdir "C:\Users\das13016\Dropbox\Research and Referee work\papers\Under Review\Intergen Sipp\child SIPP longterm\analysis\samples"
 global results  "C:\Users\das13016\Dropbox\Research and Referee work\papers\Under Review\Intergen Sipp\child SIPP longterm\analysis\output\JobLosers_SafetyNet"
 
@@ -62,7 +62,8 @@ global samples "$dir/child SIPP longterm/analysis/samples/JobLosers_SafetyNet"
 global ek_rawdata "$dir/child SIPP longterm/literature/Jobloss Papers/Elira_JMP_datafiles/Data/Raw/StateYear"
 global ek_outputdata "C:\Users\das13016\Dropbox\Research and Referee work\papers\Under Review\Intergen Sipp\child SIPP longterm\literature\Jobloss Papers\Elira_JMP_datafiles\Data\RegData"
 global rv_outputdata "$dir/child SIPP longterm/analysis/dofiles/Jobloss/Aux data and setupcode/Safety Net Calculators"
-global outputlog "/Users/chloeeast/Documents/GitHub/JobLosers_SafetyNet/logs"
+global outputlog "/Users/chloeeast/Documents/GitHub/East_Simon/logs"
+global results "$dir/child SIPP longterm/analysis/output/JobLosers_SafetyNet"
 }
 
 if c(username)=="elizabeth"   {
@@ -73,7 +74,8 @@ global samples "$dir/child SIPP longterm/analysis/samples/JobLosers_SafetyNet"
 global ek_rawdata "$dir/child SIPP longterm/literature/Jobloss Papers/Elira_JMP_datafiles/Data/Raw/StateYear"
 global ek_outputdata "$dir/child SIPP longterm/literature/Jobloss Papers/Elira_JMP_datafiles/Data/RegData"
 global rv_outputdata "$dir/child SIPP longterm/analysis/dofiles/Jobloss/Aux data and setupcode/Safety Net Calculators"
-global outputlog "/Users/elizabeth/Dropbox/Other Stuff for Chloe/Jobloss/Results"
+global outputlog "/Users/elizabeth/Documents/GitHub/East_Simon/logs"
+global results "$dir/child SIPP longterm/analysis/output/JobLosers_SafetyNet"
 }
 
 #delimit ;

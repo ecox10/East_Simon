@@ -63,7 +63,7 @@ global outputdata "$dir/Intergen Sipp/child SIPP longterm/analysis/samples/JobLo
 
 if c(username)=="chloeeast"{
 
-global outputdata "$dir/child SIPP longterm//analysis/samples/JobLosers_SafetyNet"
+global outputdata "$dir/child SIPP longterm/analysis/samples/JobLosers_SafetyNet"
 }
 
 cd "$outputdata"
@@ -126,12 +126,12 @@ for any annwg bpw hq1w hq2w qearn_l1 qearn_l2: replace X=0 if X==.
 	
 	if c(username)=="davidsimon"{
 
-cd "/Users/davidsimon/Documents/GitHub/JobLosers_SafetyNet/makedata/"
+cd "/Users/davidsimon/Documents/GitHub/East_Simon/makedata/"
 }
 
 if c(username)=="chloeeast"{
 
-cd "/Users/chloeeast/Documents/GitHub/JobLosers_SafetyNet/makedata"	
+cd "/Users/chloeeast/Documents/GitHub/East_Simon/makedata"	
 }
 
 cd "$outputdata"

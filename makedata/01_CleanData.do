@@ -9,16 +9,16 @@ Outputs: sipp_annual`syear'".dta, sipp_cleaned.dta, regfinal.dta
 
 if c(username)=="das13016"{
 
-cd "/Users/das13016/Documents/GitHub/JobLosers_SafetyNet/makedata/"
+cd "/Users/das13016/Documents/GitHub/East_Simon/makedata/"
 }
 
 if c(username)=="chloeeast"{
 
-cd "/Users/chloeeast/Documents/GitHub/JobLosers_SafetyNet/makedata"	
+cd "/Users/chloeeast/Documents/GitHub/East_Simon/makedata"	
 }
 
 if c(username)=="elizabeth"{
-	cd "/Users/elizabeth/Documents/GitHub/JobLosers_SafetyNet/makedata"
+	cd "/Users/elizabeth/Documents/GitHub/East_Simon/makedata"
 } 
 
 do 00_master_setup.do
