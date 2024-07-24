@@ -30,7 +30,6 @@ gen loss = ym_loss==ym_now & ym_loss!=. & ym_now!=.
 replace loss=0 if whystop1!=1 & whystop1!=9 & whystop1!=10 & whystop1!=13		// involuntary job loss
 		
 
-
 *** Months since involuntary job loss: focus on 1st job loss only
 bysort uniqueid: egen num_losses=total(loss)
 gen temp_order_loss = 9999

@@ -2,3 +2,4 @@
 * text=auto
 *.dta filter=lfs diff=lfs merge=lfs -text
 data/regfinal.dta filter=lfs diff=lfs merge=lfs -text
+data/regfinal.dta.gz filter=lfs diff=lfs merge=lfs -text
