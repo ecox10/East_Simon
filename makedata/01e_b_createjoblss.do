@@ -576,7 +576,7 @@ replace tenure_1year2 = tenure_1year if loser==1
 ***************************************	
 * Simulated instruments
 ***************************************
-merge m:1 kids year statefip using "${ek_data}/instrument_sipp_y", gen(instm) keepus(sim_repl_sipp*)
+merge m:1 kids year statefip using "${ek_data}/instrument_sipp_y", gen(instm) keepus(sim_repl_sipp*) // from Kuka UI data (see readme)
 	
 drop if instm==2 // edited, merge==1 is non job loosers, keep these for now.
 drop instm	

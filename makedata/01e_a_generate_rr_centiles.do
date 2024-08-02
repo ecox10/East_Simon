@@ -13,7 +13,7 @@ Outputs: SIPP_centiles.dta, SIPP_respondent_reporting.dta, SIPP_dollars_reportin
 
 **** read and format IRS data ****
 clear
-import excel "${lms_data}/LMS-UI-data.xlsx", sheet(Imputations) cellrange(A5:F2204)
+import excel "${lms_data}/LMS-UI-data.xlsx", sheet(Imputations) cellrange(A5:F2204) // From LMS data (see readme)
 rename A inc_centile
 rename B taxyr
 rename C ui_sum
@@ -54,7 +54,7 @@ gen anyui_bymth = uiamt>0
 egen anyui_count = total(anyui_bymth), by(incid year)
 gen anyui = anyui_count>0
 
-save "${lms_data}/temp.dta", replace
+save "${outdata}/temp.dta", replace
 
 **** Create centiles ****
 
@@ -115,7 +115,10 @@ keep if record_count == 1
 
 * Add IRS data
 sort year inc_centile
-joinby year inc_centile using "${lms_data}/IRS_centile_ui.dta", unmatched(master) _merge(IRS_cent_merge)
+drop _merge
+merge m:1 year inc_centile using "${lms_data}/IRS_centile_ui.dta"
+drop _merge 
+keep if year >= 1999
 
 * calculate number participants in each centile
 sort year inc_centile
@@ -138,9 +141,12 @@ restore
 
 **** dollars **** 
 
-* add IRS data
+* Add IRS data
 sort year inc_centile
-joinby year inc_centile using "${lms_data}/IRS_centile_ui.dta", unmatched(master) _merge(IRS_cent_merge)
+drop _merge
+merge m:1 year inc_centile using "${lms_data}/IRS_centile_ui.dta"
+drop _merge 
+keep if year >= 1999
 
 * calculate dollars
 sort year inc_centile

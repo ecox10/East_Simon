@@ -46,7 +46,7 @@ bysort uniqueid: replace year_m0 = year_m0[1]
 
 * Add weeks of UI benefit data 
 preserve 
-use "${ek_data}/eui_state_08-14.dta", clear
+use "${ek_data}/eui_state_08-14.dta", clear // from Kuka UI data (see readme)
 rename fips fips_m0 
 rename year year_m0
 rename month month_m0
@@ -137,7 +137,7 @@ gen fs_eligible = (hinc<1.3*hpov)
 	* continental us
 preserve 
 
-import excel "${snapdata}/snap_parameters_1980-2023_updated2023.xlsx", clear firstrow sheet("snap continental us") // Data from Tara Watson at Brookings (we don't have permission to share)
+import excel "${snapdata}/snap_parameters_1980-2023_updated2023.xlsx", clear firstrow sheet("snap continental us") // Data from Tara Watson at Brookings (unable to share)
 rename snapfiscalyearfiscalyearX year_m 
 rename familysize hnp
 

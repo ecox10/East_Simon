@@ -89,11 +89,16 @@ gen dep17=kids_m
 gen dep18=kids_m
 drop if mstat==.
 
+preserve 
+use "${outdata}/statecodes_all.dta", clear
+rename statefip statefip_m0
+tempfile statecw 
+save `statecw', replace 
+restore 
 
 sort statefip_m0
-merge m:1 statefip_m0 using "${outdata}/statecw.dta"
+merge m:1 statefip_m0 using `statecw'
 rename state statename
-rename statefoi state
 drop _merge
 
 *taxsim outputs to current directory, change to samples for now
