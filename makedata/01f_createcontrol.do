@@ -1,10 +1,13 @@
+/*********************
+File Name: 01f_createcontrol.do
 
+This file cleans the dataset of the control group, non job losers
 
+By: Chloe East and David Simon
 
-
-*************************************************
-*****************CREATE Regression DATASET for Control, non job losers ***********************
-************************************************* 
+Inputs: controlsetup.dta
+Outputs: control_never.dta
+***********************/
 
 use "${outdata}/controlsetup.dta", replace
 

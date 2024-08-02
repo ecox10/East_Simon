@@ -1,10 +1,13 @@
+/*********************
+File Name: 01g_finalcleaning.do
 
-*******OVERVIEW********
-*EAST and Simon: how well insured are job losers
-*11/29/2023
-*All final cleaning before results, generates poverty ratio bins, adjusts for under-reporting, and creates outcome variables for event study.
-********************
+All final cleaning before results, generates poverty ratio bins, adjusts for under-reporting, and creates outcome variables for event study.
 
+By: Chloe East and David Simon
+
+Inputs: sipp_reg.dta
+Outputs: regfinal.dta
+***********************/
 
 clear all
 cap clear matrix

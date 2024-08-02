@@ -1,3 +1,14 @@
+/*********************
+File Name: 01e_b_createjoblss.do
+
+This file combines previously made datasets to create the main sample of job losers. The file identifies job losers as described in the data section of "The safety net and job loss: How much insurance do public programs provide?" 
+
+By: Chloe East and David Simon
+
+Inputs: sipp_cleaned.dta, instrument_sipp_y (ek_data), SIPP_centiles.dta, SIPP_respondent_reporting.dta, SIPP_dollars_reporting.dta, chyeaout.dta
+Outputs: controlsetup.dta, sipp_reg.dta
+***********************/
+
 *************************************************
 ***************** 		CREATE REGRESSION DATASET		***********************
 			*************************************************

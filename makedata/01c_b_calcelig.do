@@ -1,14 +1,20 @@
-/*
-***********************
-Created on: 1/4/2014
+/*********************
+File Name: 01c_b_calcelig.do
 
 This file assigns UI eligibility according to wages.
 File taken and updated from Chetty's UI calculator. Chetty's went from 1984-1994, but I need to
 update from 1993 to 2014. Also, Chetty excluded Maine, Vermont, Iowa, N. Dakota, S. Dakota, Alaska, 
 Idaho, Montana, Wyoming, so I add them here.
 
-ATTN: This has not been fixed for period before 1983.
-*/
+By: Chloe East and David Simon
+
+Inputs:
+	- bpw = Base Period Wages
+	- hq1w = quarterly wage 
+Outputs: 
+	- elig 
+***********************/
+
 gen elig=0
 
 gen hqw=hq1w

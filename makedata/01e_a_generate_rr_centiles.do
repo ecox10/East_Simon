@@ -1,13 +1,15 @@
-*==============================
-* Underreporting in UI 
-* Pieces taken from:
+/*********************
+File Name: 01e_a_generate_rr_centiles.do
+
+Generate universal income centiles and save them by year and incid
+Pieces taken from:
 * Jeff Larrimore, Jacob Mortenson, and David Splinter
-*
-* Edited by:
-* Ellie Cox
-* 
-* Generate universal income centiles and save them by year and incid
-*==============================
+
+By: Chloe East and David Simon
+
+Inputs: LMS-UI-data.xlsx (from Larrimore et al. replication package), sipp_cleaned.dta
+Outputs: SIPP_centiles.dta, SIPP_respondent_reporting.dta, SIPP_dollars_reporting.dta
+***********************/
 
 **** read and format IRS data ****
 clear

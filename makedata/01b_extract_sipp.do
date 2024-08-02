@@ -1,4 +1,13 @@
+/*********************
+File Name: 01b_extract_sipp.do
 
+This file extracts the variables we use from the raw sipp data and saves them in sipp_annual`syear'.dta files
+
+By: Chloe East and David Simon
+
+Inputs: sipp`syear'_`wave'.dta
+Outputs: sipp_annual`syear'.dta
+***********************/
 
 			
 ****************************

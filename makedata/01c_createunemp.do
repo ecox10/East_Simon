@@ -1,3 +1,14 @@
+/*********************
+File Name: 01c_createunemp.do
+
+This file uses SIPP data to create weekly UI benefit amounts, and eligibility.
+
+By: Chloe East and David Simon
+
+Inputs: sipp_annual`syear'.dta, 01c_a_calc.do, 01c_b_calcelig.do, statecodes_all.dta, uilaws_updated.dta (ek_data), state_data.dta
+Outputs: sipp_cleaned_temp.dta, sipp_cleaned.dta
+***********************/
+
 ******************************************************
 ***************** 		CREATE UNEMPLOYMENT VARIABLES		***********************
 			******************************************************

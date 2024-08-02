@@ -1,7 +1,5 @@
-/*
-***********************
-File created on 05/03/2013
-
+/*********************
+File Name: 01c_a_calc.do
 
 This do file assigns each person a UI benefit based on their wage and, in some states, their number
 of kids. It does so by matching the wage to a state-specific benefit schedule, which has a min, a 
@@ -23,16 +21,14 @@ other states have also allowances for non-working spouses (which Chetty and Grub
 so keeping just Illinois seems inconsistent. Moreover, spousal labor supply is responsive to 
 replacement rates, so we may have issue of endogeneity.
 
-***
-NOTES REGARDING PROGRAM:
+By: Chloe East and David Simon
 
-input variables used:
+Inputs:
 	- wg = weekly wage
 		- use monthly earnings on job 1, over weeks in month
 	- annwg = annual earnings
 		- use earnings on job 1 for the wave times three
-	- hq1w = quarterly wage? 		// EK adds this. Note: on Chetty's code it appears are average 
-									of last two quarters. CHECK this variable.	
+	- hq1w = quarterly wage 		
 	- children = number of kids
 	- tao = tax rate (calculated in program tax.do)
 	- mardum = dummy for being married
@@ -40,28 +36,24 @@ input variables used:
 	- nndate = year, month, day date
 	- state = state number
 
-output variables created:
+Outputs: 
 	- wba - weekly UI benefit
 	- min - minimum benefit
 	- max - maximum benefit
 	- wba_at - after-tax UI benefit
 	- repl_at - after-tax replacement rate
-	
-***
-BEFORE RUNNING THIS PROGRAM:
-Must have the PSID merged with the uilaws_complete.dta (or uilaws_orig_grubchetty.dta if want to 
-add just original data)
+***********************/
 
--------------------------------------------------------------------- 
-*/
+*****
+*BEFORE RUNNING THIS PROGRAM:
+*Must have the PSID merged with the uilaws_complete.dta (or uilaws_orig_grubchetty.dta if want to 
+*add just original data)
 
 
 cd "${outdata}"
 net from "https://www.nber.org/stata"
 net describe taxsim32
 net install taxsim32
-
-
 
 
 	   **********************************************

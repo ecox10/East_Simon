@@ -1,3 +1,14 @@
+/*********************
+File Name: 01d_childinsurance.do
+
+This file cleans health insurance variables.
+
+By: Chloe East and David Simon
+
+Inputs: sipp_cleaned_temp.dta
+Outputs: chyeaout.dta
+***********************/
+
 ******************************************************
 ***************** 		CREATE child insurance DATASET		***********************
 			******************************************************
