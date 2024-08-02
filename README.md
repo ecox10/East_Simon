@@ -10,3 +10,5 @@ In our analysis we use data from Larrimore et al. (2022) and Kuka (2020). For in
 https://www.davidsplinter.com/
 
 https://direct.mit.edu/rest/article-abstract/102/3/490/96788/Quantifying-the-Benefits-of-Social-Insurance?redirectedFrom=fulltext
+
+SIPP UI under-reporting rates are in underreporting, and are on a scale of 0-1.
