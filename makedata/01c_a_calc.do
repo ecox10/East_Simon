@@ -1,7 +1,6 @@
 /*
 ***********************
 File created on 05/03/2013
-Last Updated: 04/01/2017
 
 
 This do file assigns each person a UI benefit based on their wage and, in some states, their number
@@ -56,17 +55,8 @@ add just original data)
 -------------------------------------------------------------------- 
 */
 
-if c(username)=="davidsimon"{
 
-global outputdata "$dir/Intergen Sipp/child SIPP longterm/analysis/samples/JobLosers_SafetyNet/"
-}
-
-if c(username)=="chloeeast"{
-
-global outputdata "$dir/child SIPP longterm/analysis/samples/JobLosers_SafetyNet"
-}
-
-cd "$outputdata"
+cd "${outdata}"
 net from "https://www.nber.org/stata"
 net describe taxsim32
 net install taxsim32
@@ -101,46 +91,31 @@ gen state=0
 
 for any annwg bpw hq1w hq2w qearn_l1 qearn_l2: replace X=0 if X==.
 
-	* For TAXSIM Calculator
-	gen pwages = annwg
-	
-	gen id = _n
-	preserve 
-	keep id year state mstat pwages 
-	taxsim35, replace
-	sort id 
-	tempfile taxsimtemp 
-	save `taxsimtemp', replace 
-	restore 
-	
-	sort id 
-	merge id using `taxsimtemp'
-	
-	gen tao = fiitax/annwg
-	replace tao=0 if tao==.
-	
-	
+* For TAXSIM Calculator
+gen pwages = annwg
 
-	drop state
-	rename stateold state
+gen id = _n
+preserve 
+keep id year state mstat pwages 
+taxsim35, replace
+sort id 
+tempfile taxsimtemp 
+save `taxsimtemp', replace 
+restore 
 	
-	if c(username)=="davidsimon"{
-
-cd "/Users/davidsimon/Documents/GitHub/East_Simon/makedata/"
-}
-
-if c(username)=="chloeeast"{
-
-cd "/Users/chloeeast/Documents/GitHub/East_Simon/makedata"	
-}
-
-cd "$outputdata"
+sort id 
+merge id using `taxsimtemp'
 	
+gen tao = fiitax/annwg
+replace tao=0 if tao==.
+		
+drop state
+rename stateold state
 	
 gen wba=.
 
 // Alabama
-replace wba = (1/24)*(hq12sum)/2 if st==1  /*note average together the sum of the two ways of calculating quarterly earnings, divide by 24?  must be state slope? */
+replace wba = (1/24)*(hq12sum)/2 if st==1  /*note average together the sum of the two ways of calculating quarterly earnings*/
 replace wba=(1/26)*(hq12sum)/2 if st==1 & nndate>=20060100		// Enacted 4/18
 
 
@@ -293,7 +268,7 @@ replace wba=wba+min(5*children,38) if st==6 & wba>min & wba<max & nndate>=196910
 replace wba=wba+min(5*children,.5*wba) if st==6 & wba>min & wba<max	& nndate>=19710100 & nndate<19810100
 replace wba=wba+min(10*children,.5*wba) if st==6 & wba>min & wba<max & nndate>=19810100 & nndate<19850100
 replace wba=wba+min(10*children,.5*wba,50) if st==6 & wba>min & wba<max & nndate>=19850100 & nndate<20000100
-replace wba=wba+min(15*children,wba,75) if st==6 & wba>min & wba<max & nndate>=20000100			// EK adds this
+replace wba=wba+min(15*children,wba,75) if st==6 & wba>min & wba<max & nndate>=20000100			
 
 
 // Delaware
@@ -318,10 +293,10 @@ replace wba=(1/26)*hq1w if st==9 & nndate>=19960700
 
 // Georgia
 replace wba=(1/50)*hq12sum if st==10 & nndate<19970700
-replace wba=(1/48)*hq12sum if st==10 & nndate>=19970700 & nndate<20020700  		// RC and EK
-replace wba=(1/46)*hq12sum if st==10 & nndate>=20020700 & nndate<20060700		// EK
-replace wba=(1/44)*hq12sum if st==10 & nndate>=20060700 & nndate<20080100		// EK
-replace wba=(1/42)*hq12sum if st==10 & nndate>=20080100							// EK
+replace wba=(1/48)*hq12sum if st==10 & nndate>=19970700 & nndate<20020700  		
+replace wba=(1/46)*hq12sum if st==10 & nndate>=20020700 & nndate<20060700		
+replace wba=(1/44)*hq12sum if st==10 & nndate>=20060700 & nndate<20080100		
+replace wba=(1/42)*hq12sum if st==10 & nndate>=20080100						
 
 
 // Idaho
@@ -356,21 +331,21 @@ replace wba = .655*(1/26)*hq12sum if st==12 & children>0 & nndate>=19930100
 	// EK thinks it should be like this most years. In another document: "The dependent child allowance 
 	// rate with respect to each benefit year beginning in calendar year 2011 may not be greater than 
 	// 17.4%. For calendar years 2012 and 2013, the dependent allowance rate is 17.0%"
-replace wba=0.48*(1/26)*hq12sum if st==12 & nndate>=20040100 & nndate<20090100	// DB
-replace wba=(0.48+.174)*(1/26)*hq12sum if st==12 & children>0 & nndate>=20040100 & nndate<20090100 	// EK
+replace wba=0.48*(1/26)*hq12sum if st==12 & nndate>=20040100 & nndate<20090100	
+replace wba=(0.48+.174)*(1/26)*hq12sum if st==12 & children>0 & nndate>=20040100 & nndate<20090100 	
 
-replace wba=0.47*(1/26)*hq12sum if st==12 & nndate>=20090100						// EK
-replace wba=(0.47+.174)*(1/26)*hq12sum if st==12 & children>0 & nndate>=20090100 & nndate<20120100 	// EK
-replace wba=(0.47+.172)*(1/26)*hq12sum if st==12 & children>0 & nndate>=20120100						// EK
+replace wba=0.47*(1/26)*hq12sum if st==12 & nndate>=20090100			
+replace wba=(0.47+.174)*(1/26)*hq12sum if st==12 & children>0 & nndate>=20090100 & nndate<20120100 	
+replace wba=(0.47+.172)*(1/26)*hq12sum if st==12 & children>0 & nndate>=20120100					
 
 
 // Indiana
 replace wba=(1/25)*hq1w if st==13 & nndate<19780102
 replace wba=.043*hq1w if st==13 & nndate>=19780102 & nndate<19910700
-replace wba = 0.05*min(hq1w,1000) + 0.04*max(hq1w-1000,0) if st==13 & nndate>=19910700 & nndate<19950700	// EK
-replace wba = 0.05*min(hq1w,1750) + 0.04*max(hq1w-1750,0) if st==13 & nndate>=19950700 & nndate<19980700	// EK
-replace wba = 0.05*min(hq1w,2000) + 0.04*max(hq1w-2000,0) if st==13 & nndate>=19980700 & nndate<20120700						// EK
-replace wba = 0.47*(hq1w/13) if st==13 & nndate>=20120700						// EK
+replace wba = 0.05*min(hq1w,1000) + 0.04*max(hq1w-1000,0) if st==13 & nndate>=19910700 & nndate<19950700	
+replace wba = 0.05*min(hq1w,1750) + 0.04*max(hq1w-1750,0) if st==13 & nndate>=19950700 & nndate<19980700	
+replace wba = 0.05*min(hq1w,2000) + 0.04*max(hq1w-2000,0) if st==13 & nndate>=19980700 & nndate<20120700					
+replace wba = 0.47*(hq1w/13) if st==13 & nndate>=20120700					
 
 
 // Iowa: following Levine for later years
@@ -393,9 +368,9 @@ replace wba=.0425*hq1w if st==15 & nndate>=19790701
 replace wba=(1/25)*hq1w if st==16 & nndate<19730107
 replace wba=(1/23)*hq1w if st==16 & nndate>=19730107 & nndate<19820700
 replace wba=.01185*annwg if st==16 & nndate>=19820700 & nndate<19990100
-replace wba=.01235*annwg if st==16 & nndate>=19990100 & nndate<20010100		// EK
-replace wba=.013078*annwg if st==16 & nndate>=20010100 & nndate<20120100	// EK
-replace wba=.011923*annwg if st==16 & nndate>=20120100						// EK
+replace wba=.01235*annwg if st==16 & nndate>=19990100 & nndate<20010100		
+replace wba=.013078*annwg if st==16 & nndate>=20010100 & nndate<20120100	
+replace wba=.011923*annwg if st==16 & nndate>=20120100						
 
 
 // Louisiana
@@ -403,8 +378,8 @@ replace wba=(1/20)*hq1w if st==17 & wg<875 & nndate<19880700
 replace wba=(1/25)*hq1w if st==17 & wg>=875 & nndate<19880700
 replace wba=(1/25)*(1/4)*annwg if st==17 & nndate>=19880700 & nndate<20090700
 
-replace wba=(1/25)*(1/4)*annwg*1.05*1.32 if st==17 & nndate>=20090700				// EK. Weird
-replace wba=(1/25)*(1/4)*annwg*1.05*1.15 if st==17 & nndate>=20100100				// EK. Weird
+replace wba=(1/25)*(1/4)*annwg*1.05*1.32 if st==17 & nndate>=20090700				
+replace wba=(1/25)*(1/4)*annwg*1.05*1.15 if st==17 & nndate>=20100100				
 
 
 // Maine
@@ -433,7 +408,7 @@ replace wba = 14 if st==20 & hq1w<300 & nndate>19730101
 replace wba = 14 + (1/22)*(hq1w - 300) if st==20 & hq1w>=300 & hq1w<542 & nndate>19730101
 replace wba = 25 + (1/42)*(hq1w - 542) if st==20 & hq1w>=542 & hq1w<858 & nndate>19730101
 replace wba=(1/26)*hq1w if st==20 & hq1w>=858 & nndate>19730101 
-replace wba=0.5*wg if st==20 & hq1w>=858 & nndate>=20010100		// EK			
+replace wba=0.5*wg if st==20 & hq1w>=858 & nndate>=20010100			
 
 replace wba=wba+min(6*children,wg) if st==20 & nndate<19700701
 replace wba=wba+min(6*children,(1/2)*wba) if st==20 & nndate>=19700701 & nndate<=19870309
@@ -449,9 +424,9 @@ replace wba=wba+(92-56)*children/4 if st==21 & nndate>=19720131 & nndate<1974060
 replace wba=wba+(106-67)*children/4 if st==21 & nndate>=19740609 & nndate<19750608
 replace wba=wba+(136-97)*children/4 if st==21 & nndate>=19750701 & nndate<19810301
 
-replace wba=.7*(1-tao)*wg if st==21 & nndate>=19870100 & nndate<19950100		// EK
-replace wba=.67*(1-tao)*wg if st==21 & nndate>=19950100 & nndate<20010100		// EK
-replace wba= .041*hq1w + min(6*children,30) if st==21 & nndate>=20010100		// EK
+replace wba=.7*(1-tao)*wg if st==21 & nndate>=19870100 & nndate<19950100		
+replace wba=.67*(1-tao)*wg if st==21 & nndate>=19950100 & nndate<20010100	
+replace wba= .041*hq1w + min(6*children,30) if st==21 & nndate>=20010100		
 
 
 // Minnesota
@@ -470,10 +445,10 @@ replace wba=(1/26)*hq1w if st==23
 // Missouri
 replace wba=(1/25)*hq1w if st==24 & nndate<19750107
 replace wba=(1/20)*hq1w if st==24 & nndate>=19750107 & nndate<19800100
-replace wba=.045*hq1w if st==24 & nndate>=19800100 & nndate<19980700		// DB
-replace wba=.040*hq1w if st==24 & nndate>=19980700 & nndate<20060100		// DB
-replace wba=0.0375*hq1w if st==24 & nndate>=20060100 & nndate<20070100	// DB
-replace wba=.040*hq1w if st==24 & nndate>=20070100						// DB
+replace wba=.045*hq1w if st==24 & nndate>=19800100 & nndate<19980700	
+replace wba=.040*hq1w if st==24 & nndate>=19980700 & nndate<20060100	
+replace wba=0.0375*hq1w if st==24 & nndate>=20060100 & nndate<20070100	
+replace wba=.040*hq1w if st==24 & nndate>=20070100						
 
 
 // Montana
@@ -483,8 +458,8 @@ replace wba=.019*hq12sum if st==25 & nndate>=19910700
 
 
 // Nebraska
-replace wba=12+max(.04*(hq1w-200),0) if st==26 & nndate<20010100		// DB	
-replace wba=.5*wg if st==26 & nndate>=20010100							// DB	
+replace wba=12+max(.04*(hq1w-200),0) if st==26 & nndate<20010100	
+replace wba=.5*wg if st==26 & nndate>=20010100							
 
 
 // Nevada
@@ -498,7 +473,7 @@ replace wba=wba+min(5*children,20,.06*13*wg) if st==27 & nndate<19710704
 *-770903
 replace wba=0 if annwg<600 & st==28 & nndate<19770903
 replace wba=min(54,13+.009*(annwg-600)) if st==28 & nndate<19691005 & annwg>=600
-replace wba=min(60,13+.009*(annwg-600)) if st==28 & nndate>=19691005 & nndate<19710701		//Da: possible mistake? mising "annwg>=600"
+replace wba=min(60,13+.009*(annwg-600)) if st==28 & nndate>=19691005 & nndate<19710701		
 replace wba=min(75,14+.011*(annwg-600)) if st==28 & nndate>=19710701 & nndate<19730700 & annwg>=600
 replace wba=min(80,14+.011*(annwg-600)) if st==28 & nndate>=19730700 & nndate<19750401 & annwg>=600
 replace wba=min(95,14+.011*(annwg-600)) if st==28 & nndate>=19750401 & nndate<19770903 & annwg>=600
@@ -550,7 +525,7 @@ replace wba=min(108+.0045*(annwg-9500),179) if st==28 & nndate>=19910630 & nndat
 	// 1997 wba=1.0 to 1.1%. From then on it is always the same, just the mins and maxs change. EK looked
 	// at current benefit table, and it actually it between 1.1 and 1.0%, without any precise pattern.
 
-replace wba=0.008*annwg if st==28 & nndate>=19900100 	// EK: eligibility (should do this for all states?)
+replace wba=0.008*annwg if st==28 & nndate>=19900100 	
 replace wba=0.01*annwg if st==28 & nndate>=19970700
 
 
@@ -566,13 +541,13 @@ replace wba=min(wba+.15*wg,max) if children>=3 & st==29 & nndate>=19850100
 
 
 // New Mexico
-replace wba=(1/26)*hq1w if st==30 & nndate<20030700						// DB
-replace wba=0.525*hq1w/13 if st==30 & nndate>=20030700 & nndate<20050100		// EK
-replace wba=0.50*hq1w/13 if st==30 & nndate>=20050100 & nndate<20050700 		// EK
-replace wba=0.525*hq1w/13 if st==30 & nndate>=20050700 & nndate<20070700 		// EK
-replace wba=0.535*hq1w/13 if st==30 & nndate>=20070700 & nndate<20090700		// EK
-replace wba=0.6*hq1w/13 if st==30 & nndate>=20090700 & nndate<20100700			// EK
-replace wba=0.535*hq1w/13 if st==30 & nndate>=20100700							// EK
+replace wba=(1/26)*hq1w if st==30 & nndate<20030700						
+replace wba=0.525*hq1w/13 if st==30 & nndate>=20030700 & nndate<20050100	
+replace wba=0.50*hq1w/13 if st==30 & nndate>=20050100 & nndate<20050700 	
+replace wba=0.525*hq1w/13 if st==30 & nndate>=20050700 & nndate<20070700 		
+replace wba=0.535*hq1w/13 if st==30 & nndate>=20070700 & nndate<20090700	
+replace wba=0.6*hq1w/13 if st==30 & nndate>=20090700 & nndate<20100700		
+replace wba=0.535*hq1w/13 if st==30 & nndate>=20100700						
 
 replace min=58 + min(15*children,15) if st==30 & nndate>=20040100 & nndate<20050100
 replace min=57 + min(15*children,16) if st==30 & nndate>=20050100 & nndate<20050700
@@ -616,11 +591,11 @@ replace wba = 35 if st==31 & wg>=67 & wg<70 & nndate<19870100
 replace wba = 36 if st==31 & wg>=70 & wg<73 & nndate<19870100
 replace wba = 1/2*wg if st==31 & wg>=73 & nndate<19870100
 
-replace wba=.5*wg if st==31 & nndate>=19870100 & nndate<20000100	// EK
-replace wba=(1/26)*hq1w if st==31 & nndate>=20000100 & nndate<20150100 & hq1w>=3575	// EK
-replace wba=(1/25)*hq1w if st==31 & nndate>=20000100 & nndate<20150100 & hq1w<3575	// EK
-replace wba=(1/26)*hq1w if st==31 & nndate>=20150100 & hq1w>=4000	// EK
-replace wba=(1/25)*hq1w if st==31 & nndate>=20150100 & hq1w<4000	// EK
+replace wba=.5*wg if st==31 & nndate>=19870100 & nndate<20000100	
+replace wba=(1/26)*hq1w if st==31 & nndate>=20000100 & nndate<20150100 & hq1w>=3575	
+replace wba=(1/25)*hq1w if st==31 & nndate>=20000100 & nndate<20150100 & hq1w<3575	
+replace wba=(1/26)*hq1w if st==31 & nndate>=20150100 & hq1w>=4000	
+replace wba=(1/25)*hq1w if st==31 & nndate>=20150100 & hq1w<4000	
 
 
 // North Carolina
@@ -657,8 +632,8 @@ replace wba = 1/26*hq1w if st==32 & nndate>=19950100
 
 
 // North Dakota
-replace wba=(1/26)*hq1w if st==33 & nndate<19870700							// EK.
-replace wba=(1/65)*hq12sum if st==33 & nndate>=19870700 & nndate<19880700	// EK. 2 highest quarters
+replace wba=(1/26)*hq1w if st==33 & nndate<19870700							
+replace wba=(1/65)*hq12sum if st==33 & nndate>=19870700 & nndate<19880700	
 replace wba=(1/65)*(hq12sum + 0.5*hq2w)  if st==33 & nndate>=19880700		// 1/65 of (2 highest quarters + 0.5 of third quarter)
 
 
@@ -669,7 +644,7 @@ replace wba=(1/2)*wg if st==34
 // Oklahoma
 replace wba=(1/26)*hq1w if st==35 & nndate<19780102
 replace wba=(1/25)*hq1w if st==35 & nndate>=19780102
-replace wba=(1/23)*hq1w if st==35 & nndate>=19980700			// RC
+replace wba=(1/23)*hq1w if st==35 & nndate>=19980700			
 
 
 // Oregon
@@ -777,7 +752,7 @@ replace wba=(1/25)*hq1w if st==42
 
 // Utah
 replace wba=(1/26)*hq1w if st==43
-replace wba=wba-5 if st==43 & nndate>=20110100		// EK added this
+replace wba=wba-5 if st==43 & nndate>=20110100	
 
 
 // Vermont
@@ -790,9 +765,9 @@ replace wba=(1/50)*hq12sum if st==45			// 1/50 of sum of 2 highest quarters
 
 
 // Washington
-replace wba=.04*(hq12sum/2) if st==46 & nndate<20050100					// EK
-replace wba=.01*annwg if st==46 & nndate>=20050100 & nndate<20050700 	// EK
-replace wba=.0385*hq12sum/2 if st==46 & nndate>=20050700				// EK. April 24, 2005
+replace wba=.04*(hq12sum/2) if st==46 & nndate<20050100				
+replace wba=.01*annwg if st==46 & nndate>=20050100 & nndate<20050700 	
+replace wba=.0385*hq12sum/2 if st==46 & nndate>=20050700				
 
 
 // West Virginia
@@ -820,8 +795,8 @@ replace wba = (0.001*annwg + 2) if annwg>=2500 & annwg<3200 & st==47 &  nndate>=
 replace wba = 35 + 1.59*((annwg-3200)/150) if annwg>=3200 & st==47 & nndate>=19780701 & nndate<=19830700
 replace wba = 35 + 1.58*((annwg-3200)/150) if annwg>=3200 & st==47 & nndate>=19830700 & nndate<=19850700
 
-replace wba =.01*annwg if st==47 & nndate>=19850700			// EK
-replace wba =.55*(annwg/52) if st==47 & nndate>=20110700	// EK. Document says median wage instead of annwg
+replace wba =.01*annwg if st==47 & nndate>=19850700			
+replace wba =.55*(annwg/52) if st==47 & nndate>=20110700	
 
 
 // Wisconsin

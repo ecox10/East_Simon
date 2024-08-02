@@ -1,10 +1,15 @@
+/*********************
+File Name: summstats.do
 
-*******OVERVIEW********
-* This file produces produces summary statistics tables along with figures/graphs that show number of joblosses in sample, etc.  
-********************
+This file produces produces summary statistics tables along with figures/graphs that show number of joblosses in sample, etc. Produces results in the paper:
+"The safety net and job loss: How much insurance do public programs provide?" 
 
+By: Chloe East and David Simon
 
-capture log close
+Inputs: regfinal.dta
+Outputs: num_by_year_jl.pdf, samplesize_bypov_tenure_1year_all.pdf, mean_eversafnet_bypov_tenure_1year_all_pre.pdf, mean_changesafnet_bypov_tenure_1year_all.pdf
+***********************/
+
 clear all
 cap clear matrix
 cap clear mata
@@ -14,60 +19,8 @@ set more off, permanently
 
 net install scheme-modern, from("https://raw.githubusercontent.com/mdroste/stata-scheme-modern/master/")
 set scheme modern
-
-*********************************************************************
-/* DIRECTORY AND FILE NAMES: */  
-clear all 
-
-if c(username)=="chloeeast" {  		// for Chloe's computer
-	global dir "/Users/chloeeast/Dropbox/"	 	 	
-	global dofiles"/Users/chloeeast/Documents/GitHub/East_Simon/makedata"	 	 	
-} 
-else if c(username)=="Chloe" {  		// for Chloe's laptop
-	global dir "/Users/Chloe/Dropbox"
-} 
-else if c(username)=="davidsimon" {  //for David's laptop
-	global dir "/Users/davidsimon/Dropbox/Research and Referee work/papers/Under Review"
-	global dofiles "/Users/davidsimon/Documents/GitHub/East_Simon/makedata"
-}
-else if c(username)=="elizabeth" { // Ellie's laptop
-	global dir "/Users/elizabeth/Dropbox"
-	global dofiles "/Users/elizabeth/Documents/GitHub/East_Simon/makedata"
-}
-
-if c(username)=="das13016" {  //for David's laptop
-	global rawdata "$dir/Intergen Sipp/rawdata"
-	global outputdata "C:\Users\das13016\Dropbox\Research and Referee work\papers\Under Review\Intergen Sipp\child SIPP longterm\analysis\output\JobLosers_SafetyNet"
-	global samples "$dir/Intergen Sipp/child SIPP longterm/analysis/samples/JobLosers_SafetyNet/"
-	global ek_rawdata "$dir/child SIPP longterm/literature/Jobloss Papers/Elira_JMP_datafiles/Data/Raw/StateYear"
-	global ek_outputdata "$dir\child SIPP longterm\literature\Jobloss Papers\Elira_JMP_datafiles\Data\RegData\"
-	global outputlog "/Users/davidsimon/Documents/GitHub/East_Simon/logs"
-	global results "$dir/Intergen Sipp/child SIPP longterm/analysis/output/JobLosers_SafetyNet/"
-}
-if c(username)=="chloeeast" | c(username)=="Chloe"   {
-	global rawdata "$dir/rawdata"
-	global rv_outputdata "/Users/chloeeast/Dropbox/child SIPP longterm/analysis/dofiles/jobloss/Aux data and setupcode/Safety Net Calculators"
-	global outputdata "$dir/child SIPP longterm//analysis/samples"
-	global samples "$dir/child SIPP longterm/analysis/samples/JobLosers_SafetyNet/"
-	global ek_rawdata "$dir/child SIPP longterm/literature/Jobloss Papers/Elira_JMP_datafiles/Data/Raw/StateYear"
-	global ek_outputdata "$dir/child SIPP longterm/literature/Jobloss Papers/Elira_JMP_datafiles/Data/RegData/"
-	global outputlog "/Users/chloeeast/Documents/GitHub/East_Simon/logs"
-	global results "$dir/child SIPP longterm/analysis/output/JobLosers_SafetyNet"
-}
-if c(username)=="elizabeth" {
-	global rv_outputdata "$dir/child SIPP longterm/analysis/dofiles/jobloss/Aux data and setupcode/Safety Net Calculators"
-	global outputdata "$dir/child SIPP longterm//analysis/samples"
-	global samples "$dir/child SIPP longterm/analysis/samples/JobLosers_SafetyNet"
-	global ek_rawdata "$dir/child SIPP longterm/literature/Jobloss Papers/Elira_JMP_datafiles/Data/Raw/StateYear"
-	global ek_outputdata "$dir/child SIPP longterm/literature/Jobloss Papers/Elira_JMP_datafiles/Data/RegData"
-	global outputlog "/Users/elizabeth/Documents/GitHub/East_Simon/logs"
-	global results "$dir/child SIPP longterm/analysis/output/JobLosers_SafetyNet"
-}
-*******
-log using "$outputdata/summstats1.log", replace	
-
 		
-use "$samples/regfinal.dta", clear 
+use "${outdata}/regfinal.dta", clear 
 
 
 ***************************************
@@ -137,7 +90,7 @@ collapse (sum) sum [aw=p5wgt_m0] , by(year_jl)
 label var sum "Number of Job Losers"
 label var year_jl "Year of Job Loss"
 twoway (bar sum year_jl), xlabel(1996(4)2013)  xscale(r(1996(4)2013))
-graph export "$results/num_by_year_jl.pdf", replace	
+graph export "${results}/num_by_year_jl.pdf", replace	
 restore
 
 // Figure A3: job losers by pre job loss hh income
@@ -151,7 +104,7 @@ sum pov_ratio_ur
 label var sum "Number of Job Losers"
 twoway (bar sum pov_ratio_ur , barwidth(70))  , ///
 xlabel(100(300)900)  xscale(r(100(300)900) )  
-graph export "$results/samplesize_bypov_tenure_1year_all.pdf", replace	
+graph export "${results}/samplesize_bypov_tenure_1year_all.pdf", replace	
 restore
 
 // UI elig by pre job loss hh income
@@ -172,7 +125,7 @@ tab pov_ratio_ur
 graph bar elig both_elig, over(pov_ratio_ur) ///
 legend(label(1 "Income Only") label(2 "Income & Self-Emp")) ///
 b1title("Poverty Ratio")   
-graph export "$results/uielig_bypov_tenure_1year_all.pdf", replace
+graph export "${results}/uielig_bypov_tenure_1year_all.pdf", replace
 restore
 
 preserve
@@ -188,13 +141,8 @@ label var amt_per_elig "Avg. UI Benefit Amount Among Eligible"
 graph bar amt_per_elig, over(pov_ratio_ur) ///
 ytitle("Avg. UI Benefit Amount Among Eligible") ///
 b1title("Poverty Ratio")   
-graph export "$results/uiamt_bypov_tenure_1year_all.pdf", replace	
+graph export "${results}/uiamt_bypov_tenure_1year_all.pdf", replace	
 restore
-
-log close
-
-
- log using "$outputdata/tab5.log", replace	
 
 
 *********************************************************************************
@@ -205,10 +153,6 @@ foreach y in  earn uiamt  h_fs_amt h_tanf_amt frp_lunch_value h_wic_amt ssi_amt 
 summ `y'_ur if `y'>0 & `y'~=. & tenure_1year==1 & head_spouse_partner==1 & month_reljl>0 & month_reljl~=. [aw=p5wgt_m0]
 }
 *****************************************************************************
-
-log close
-
-log using "$outputdata/summstats2.log", replace	
 
 *****************
 *FIgure A2 panel (a) Results Below
@@ -229,7 +173,7 @@ twoway (line d_uiamt pov_ratio_ur,  color(blue) lwidth(medthick) yaxis(2)) (line
 xlabel(100(300)1000)  xscale(r(100(300)1000) ) ///
 legend(label(1 "UI") label(2 "SNAP") label(3 "TANF") label(4 "FRPL") label(5 "WIC")  label(6 "SSI") label(7 "SS")  ) ///
  ytitle("Fraction Received Ever in 12 Months Before Job Loss", axis(2)) 
-graph export "$results/mean_eversafnet_bypov_tenure_1year_all_pre.pdf", replace	
+graph export "${results}/mean_eversafnet_bypov_tenure_1year_all_pre.pdf", replace	
 twoway (line d_h_fs_amt pov_ratio_ur, color(red) lpattern(dash) yaxis(2)) ///
  (line d_h_tanf_amt pov_ratio_ur, color(orange) lpattern(longdash_dot) lwidth(vthick) yaxis(2)) (line d_ssi_amt pov_ratio_ur, color(midgreen) lpattern(dot) lwidth(thick) yaxis(2)) (line  frp_lunch pov_ratio_ur, color(dkgreen) lpattern(longdash) lwidth(thick) yaxis(2)) ///
  (line  d_h_wic_amt pov_ratio_ur, color(sienna) lpattern(dash_dot) lwidth(medthick) yaxis(2)) (line  d_ss_amt pov_ratio_ur, color(purple) lpattern(shortdash) lwidth(medthick) yaxis(2)) ///
@@ -237,7 +181,7 @@ twoway (line d_h_fs_amt pov_ratio_ur, color(red) lpattern(dash) yaxis(2)) ///
 xlabel(100(300)1000)  xscale(r(100(300)1000) ) ///
  legend(label(1 "SNAP") label(2 "TANF") label(3 "FRPL") label(4 "WIC")  label(5 "SSI") label(6 "SS")  ) ///
  ytitle("Fraction Ever Received", axis(2)) 
-graph export "$results/mean_eversafnet_bypov_tenure_1year_all_pre_noui.pdf", replace	
+graph export "${results}/mean_eversafnet_bypov_tenure_1year_all_pre_noui.pdf", replace	
 restore
 
 
@@ -273,7 +217,7 @@ twoway (line diff_d_uiamt pov_ratio_ur,  color(blue) lwidth(medthick) yaxis(2)) 
 xlabel(100(300)1000)  xscale(r(100(300)1000) ) ///
 legend(label(1 "UI") label(2 "SNAP") label(3 "TANF") label(4 "FRPL") label(5 "WIC")  label(6 "SSI") label(7 "SS")   ) ///
  ytitle("Change in Receipt From Pre to Post Job Loss", axis(2)) 
-graph export "$results/mean_changesafnet_bypov_tenure_1year_all.pdf", replace		
+graph export "${results}/mean_changesafnet_bypov_tenure_1year_all.pdf", replace		
 restore
 
 
@@ -288,7 +232,7 @@ label var sum "Num Job Losers"
 label var month_reljl "Month Relative to Job Loss"
 twoway (bar sum month_reljl  )  , ///
 xlabel(-12(6)24)  xscale(r(-12(6)24) )  legend(label(1 "Num Job Losers")) 
-graph export "$results/samplesize_bymonth_reljl_tenure_1year_all.pdf", replace
+graph export "${results}/samplesize_bymonth_reljl_tenure_1year_all.pdf", replace
 restore
 
 *** Average Duration of Out of Work 
@@ -303,4 +247,3 @@ sum if tenure_1year==1 [aw=p5wgt_m0]
 restore
 
 
-log close

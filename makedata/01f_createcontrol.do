@@ -6,7 +6,7 @@
 *****************CREATE Regression DATASET for Control, non job losers ***********************
 ************************************************* 
 
-use "$samples/controlsetup.dta", replace
+use "${outdata}/controlsetup.dta", replace
 
 drop statefip_m0 kids_m0 year_m0
 drop trend
@@ -272,5 +272,5 @@ rename earn_any any
 replace dumspell5 = 0
 replace dumspell1 = 0
 
-save "$samples/control_never.dta", replace 
+save "${outdata}/control_never.dta", replace 
 

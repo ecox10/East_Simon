@@ -1,9 +1,15 @@
+/*********************
+File Name: AandSrobust.do
 
-*******OVERVIEW********
-* This test file runs Abrahama and Sun using late treated as the control group
-********************
+This file conducts Abraham and Sun results in
+"The safety net and job loss: How much insurance do public programs provide?" 
 
-capture log close
+By: Chloe East and David Simon
+
+Inputs: regfinal.dta
+Outputs: ASresources__noci_ur.png
+***********************/
+
 clear all
 cap clear matrix
 cap clear mata
@@ -18,66 +24,12 @@ set scheme modern
 *must install abraham and sun estimator to running
 net install github, from("https://haghish.github.io/github/")
 github install lsun20/eventstudyinteract
-
-*********************************************************************
-/* DIRECTORY AND FILE NAMES: */  
-clear all 
-
-if c(username)=="chloeeast" {  		// for Chloe's computer
-	global dir "/Users/chloeeast/Dropbox/"	 	 	
-	global dofiles"/Users/chloeeast/Documents/GitHub/East_Simon/makedata"	 	 	
-} 
-else if c(username)=="Chloe" {  		// for Chloe's laptop
-	global dir "/Users/Chloe/Dropbox"
-} 
-else if c(username)=="davidsimon" {  //for David's laptop
-	global dir "/Users/davidsimon/Dropbox/Research and Referee work/papers/Under Review"
-	global dofiles "/Users/davidsimon/Documents/GitHub/East_Simon/makedata"
-}
-else if c(username)=="elizabeth" { // Ellie's laptop
-	global dir "/Users/elizabeth/Dropbox"
-	global dofiles "/Users/elizabeth/Documents/GitHub/East_Simon/makedata"
-}
-
-if c(username)=="das13016" {  //for David's laptop
-	global rawdata "$dir/Intergen Sipp/rawdata"
-	global outputdata "C:\Users\das13016\Dropbox\Research and Referee work\papers\Under Review\Intergen Sipp\child SIPP longterm\analysis\output\JobLosers_SafetyNet"
-	global samples "$dir/Intergen Sipp/child SIPP longterm/analysis/samples/JobLosers_SafetyNet/"
-	global ek_rawdata "$dir/child SIPP longterm/literature/Jobloss Papers/Elira_JMP_datafiles/Data/Raw/StateYear"
-	global ek_outputdata "$dir\child SIPP longterm\literature\Jobloss Papers\Elira_JMP_datafiles\Data\RegData\"
-	global outputlog "/Users/davidsimon/Documents/GitHub/East_Simon/logs"
-	global results "$dir/Intergen Sipp/child SIPP longterm/analysis/output/JobLosers_SafetyNet/"
-}
-if c(username)=="chloeeast" | c(username)=="Chloe"   {
-	global rawdata "$dir/rawdata"
-	global rv_outputdata "/Users/chloeeast/Dropbox/child SIPP longterm/analysis/dofiles/jobloss/Aux data and setupcode/Safety Net Calculators"
-	global outputdata "$dir/child SIPP longterm//analysis/samples"
-	global samples "$dir/child SIPP longterm/analysis/samples/JobLosers_SafetyNet/"
-	global ek_rawdata "$dir/child SIPP longterm/literature/Jobloss Papers/Elira_JMP_datafiles/Data/Raw/StateYear"
-	global ek_outputdata "$dir/child SIPP longterm/literature/Jobloss Papers/Elira_JMP_datafiles/Data/RegData/"
-	global outputlog "/Users/chloeeast/Documents/GitHub/East_Simon/logs"
-	global results "$dir/child SIPP longterm/analysis/output/JobLosers_SafetyNet"
-}
-if c(username)=="elizabeth" {
-	global rv_outputdata "$dir/child SIPP longterm/analysis/dofiles/jobloss/Aux data and setupcode/Safety Net Calculators"
-	global outputdata "$dir/child SIPP longterm//analysis/samples"
-	global samples "$dir/child SIPP longterm/analysis/samples/JobLosers_SafetyNet"
-	global ek_rawdata "$dir/child SIPP longterm/literature/Jobloss Papers/Elira_JMP_datafiles/Data/Raw/StateYear"
-	global ek_outputdata "$dir/child SIPP longterm/literature/Jobloss Papers/Elira_JMP_datafiles/Data/RegData"
-	global outputlog "/Users/elizabeth/Documents/GitHub/East_Simon/logs"
-	global results "$dir/child SIPP longterm/analysis/output/JobLosers_SafetyNet"
-}
-
-
-*******
-log using "$outputdata/AandSrobust.log", replace	
-
 	
 *******************************************************************************
 ******* Produce Figure ***
 *******************************************************************************
 
-use "$samples/regfinal.dta", clear 
+use "${outdata}/regfinal.dta", clear 
 	
 ***************************************
 *** Event Study: Dynamics of Income Around Jobloss Income Sources Summed Together (separate from UI generosity), 1 YEAR JOB TENURE - SIPP ***
@@ -120,7 +72,7 @@ foreach y in  earn_ur plus_ui_ur plus_fs_ur plus_tanf_ur plus_frpl_ur plus_wic_u
 coefplot (matrix(earn_ur), label("Earnings") color(black)) , ///
 vertical ///
 xtitle("Month Relative to Job Loss") ytitle("Change in Dollar Amount") omitted
-	graph export "$results/ASearn_`b'_ur.pdf", replace
+	graph export "${results}/ASearn_`b'_ur.pdf", replace
 	
 *figure without confidence intervals	
 coefplot (matrix(earn_ur), label("Earnings") color(black)) (matrix(plus_ui_ur), label("+ UI") color(blue)) (matrix(plus_fs_ur), label("+ SNAP") color(red) msymbol(square)) ///
@@ -129,11 +81,8 @@ coefplot (matrix(earn_ur), label("Earnings") color(black)) (matrix(plus_ui_ur), 
 (matrix( plus_ss_ur), label("+ SS") color(purple) msymbol(plus)) , ///
 vertical ///
 xtitle("Month Relative to Job Loss") ytitle("Dollar Amount") omitted noci  ylabel(-3000(1000)500)  yscale(r(-3000(1000)500)) 
-	graph export "$results/ASresources_`b'_noci_ur.png", replace
+	graph export "${results}/ASresources_`b'_noci_ur.png", replace
 
-
-	
-log close
 
 
 

@@ -8,7 +8,7 @@ foreach syear in 96 01 04 08 {
 	di "THIS LOOP IS FOR YEAR `syear'"
 	di ""
 				 
-	use "$outputdata/sipp_annual`syear'", clear
+	use "${outdata}/sipp_annual`syear'", clear
 	capture qui destring suid, replace
 	capture qui destring addid, replace
 	
@@ -340,13 +340,13 @@ foreach syear in 01 04 08 {
 	append using `spell_`syear''
 }
 
-save "$samples/sipp_cleaned_temp.dta", replace
+save "${outdata}/sipp_cleaned_temp.dta", replace
 
 ******************************************************
 ***************** 		CREATE adult DATASET		***********************
 			******************************************************
 
-use "$samples/sipp_cleaned_temp.dta", clear
+use "${outdata}/sipp_cleaned_temp.dta", clear
 
 keep if statefip<60 & statefip!=.
 
@@ -400,7 +400,7 @@ gen somecol = edgr==3
 *** Add other state-year variables
 *************************************
 sort statefip
-merge m:1 statefip using "$dir/child SIPP longterm/analysis/samples/statecodes_all.dta"
+merge m:1 statefip using "${outdata}/statecodes_all.dta"
 keep if _merge==3
 drop _merge
 
@@ -409,13 +409,13 @@ gen nndate=year*10000+1*100 if mth<7
 replace nndate=year*10000+7*100 if mth>=7
 
 sort year nndate statefip
-merge m:1 nndate statefip kids using "$dir/child SIPP longterm/literature/Jobloss Papers/Elira_JMP_datafiles/Data/Raw/StateYear/uilaws_updated.dta"
+merge m:1 nndate statefip kids using "${ek_data}/uilaws_updated.dta"
 keep if _merge==3
 drop _merge	
 
 
 *** State controls and variables
-merge m:1 year statefip using "$outputdata/state_data", gen(statem)
+merge m:1 year statefip using "${outdata}/state_data", gen(statem)
 keep if year>=1990
 keep if statem==3
 drop statem
@@ -448,10 +448,10 @@ label var pub_hins "Medicare/Medicaid"
 capture drop _I*
 
 ** do this BEFORE CPI ADJUSTEMENT
-do "${dofiles}/01c_a_calc.do"
-do "${dofiles}/01c_b_calcelig.do"
+do "${makedata}/01c_a_calc.do"
+do "${makedata}/01c_b_calcelig.do"
 
 
 
 compress
-save "$samples/sipp_cleaned.dta", replace
+save "${outdata}/sipp_cleaned.dta", replace

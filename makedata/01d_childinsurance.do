@@ -5,7 +5,7 @@
 			*** Append data and clean
 ***********************
 
-use "$samples/sipp_cleaned_temp.dta", clear
+use "${outdata}/sipp_cleaned_temp.dta", clear
 
 keep if statefip<60 & statefip!=.
 
@@ -106,4 +106,4 @@ rename mth imonth
 sort hhid year_m wave imonth
 
 
-save "$samples/chyeaout.dta", replace
+save "${outdata}/chyeaout.dta", replace

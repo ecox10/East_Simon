@@ -1,11 +1,17 @@
+/*********************
+File Name: mainresults.do
 
+This file produces the main event study figures and tables as well as the underlying numbers for difference-in-difference results.  Produces results in the paper:
+"The safety net and job loss: How much insurance do public programs provide?" 
 
-*******OVERVIEW********
-* This file produces the main event study figures and tables as well as the underlying numbers for difference-in-difference results. 
-*******************
+By: Chloe East and David Simon
 
+Inputs: regfinal.dta
+Outputs: earnhh_all_ur.pdf, d_hhresources_all.tex, d_hhresources_all_noui_noci_ur.png, d_hhresources_all_noci_ur.png,
+hhresources_all_ur.tex, hhresources_all_noci_ur.png, hhresources_dd_`hpovbin'_ur.tex, hh_pov`all'_ur.tex,
+hh_pov_et_all_noci_ur.pdf
+***********************/
 
-capture log close
 clear all
 cap clear matrix
 cap clear mata
@@ -16,63 +22,8 @@ set more off, permanently
 net install scheme-modern, from("https://raw.githubusercontent.com/mdroste/stata-scheme-modern/master/")
 set scheme modern
 
-*********************************************************************
-/* DIRECTORY AND FILE NAMES: */  
+use "${outdata}/regfinal.dta", clear 
 
-if c(username)=="chloeeast" {  		// for Chloe's computer
-	global dir "/Users/chloeeast/Dropbox/"	 	 	
-	global dofiles"/Users/chloeeast/Documents/GitHub/East_Simon/makedata"	 	 	
-} 
-else if c(username)=="Chloe" {  		// for Chloe's laptop
-	global dir "/Users/Chloe/Dropbox"
-} 
-else if c(username)=="davidsimon" {  //for David's laptop
-	global dir "/Users/davidsimon/Dropbox/Research and Referee work/papers/Under Review"
-	global dofiles "/Users/davidsimon/Documents/GitHub/East_Simon/makedata"
-}
-else if c(username)=="elizabeth" { // Ellie's laptop
-	global dir "/Users/elizabeth/Dropbox"
-	global dofiles "/Users/elizabeth/Documents/GitHub/East_Simon/makedata"
-}
-
-if c(username)=="das13016" {  //for David's laptop
-	global rawdata "$dir/Intergen Sipp/rawdata"
-	global outputdata "C:\Users\das13016\Dropbox\Research and Referee work\papers\Under Review\Intergen Sipp\child SIPP longterm\analysis\output\JobLosers_SafetyNet"
-	global samples "$dir/Intergen Sipp/child SIPP longterm/analysis/samples/JobLosers_SafetyNet/"
-	global ek_rawdata "$dir/child SIPP longterm/literature/Jobloss Papers/Elira_JMP_datafiles/Data/Raw/StateYear"
-	global ek_outputdata "$dir\child SIPP longterm\literature\Jobloss Papers\Elira_JMP_datafiles\Data\RegData\"
-	global outputlog "/Users/davidsimon/Documents/GitHub/East_Simon/logs"
-	global results "$dir/Intergen Sipp/child SIPP longterm/analysis/output/JobLosers_SafetyNet/"
-}
-if c(username)=="chloeeast" | c(username)=="Chloe"   {
-	global rawdata "$dir/rawdata"
-	global rv_outputdata "/Users/chloeeast/Dropbox/child SIPP longterm/analysis/dofiles/jobloss/Aux data and setupcode/Safety Net Calculators"
-	global outputdata "$dir/child SIPP longterm//analysis/samples"
-	global samples "$dir/child SIPP longterm/analysis/samples/JobLosers_SafetyNet/"
-	global ek_rawdata "$dir/child SIPP longterm/literature/Jobloss Papers/Elira_JMP_datafiles/Data/Raw/StateYear"
-	global ek_outputdata "$dir/child SIPP longterm/literature/Jobloss Papers/Elira_JMP_datafiles/Data/RegData/"
-	global outputlog "/Users/chloeeast/Documents/GitHub/East_Simon/logs"
-	global results "$dir/child SIPP longterm/analysis/output/JobLosers_SafetyNet"
-}
-if c(username)=="elizabeth" {
-	global rv_outputdata "$dir/child SIPP longterm/analysis/dofiles/jobloss/Aux data and setupcode/Safety Net Calculators"
-	global outputdata "$dir/child SIPP longterm//analysis/samples"
-	global samples "$dir/child SIPP longterm/analysis/samples/JobLosers_SafetyNet"
-	global ek_rawdata "$dir/child SIPP longterm/literature/Jobloss Papers/Elira_JMP_datafiles/Data/Raw/StateYear"
-	global ek_outputdata "$dir/child SIPP longterm/literature/Jobloss Papers/Elira_JMP_datafiles/Data/RegData"
-	global outputlog "/Users/elizabeth/Documents/GitHub/East_Simon/logs"
-	global results "$dir/child SIPP longterm/analysis/output/JobLosers_SafetyNet"
-}
-
-*******
-log using "$outputdata/genresults_v5.log", replace	
-
-		
-	
-	use "$samples/regfinal.dta", clear 
-
-
-	
 *******************************************************************************
 *** Event Study: Dynamics of Income Around Jobloss Income Sources Summed Together (separate from UI generosity), 1 YEAR JOB TENURE - SIPP ***
 *** Full Sample and Subgroups ***
@@ -109,7 +60,7 @@ foreach y in earn marsp_earn hearn {
 coefplot (earn, label("Job Loser's Own Earnings") color(black) ciopts(lcol(black)))  (marsp_earn, label("Spousal Earnings") color(gs9) msymbol(triangle) ciopts(lcol(dimgray))) (hearn, label("Total Household Earnings") color(gray) msymbol(square)  ciopts(lcol(dimgray)))  , ///
 vertical keep(dumspell2 dumspell3 dumspell4 dumspell5 dumspell6 dumspell7 dumspell8 dumspell9 dumspell10 dumspell11 dumspell12 dumspell13 dumspell14 dumspell15 dumspell16 dumspell17 dumspell18)  ///
 xtitle("Month Relative to Job Loss") ytitle("Change in Dollar Amount") omitted
-	graph export "$results/earnhh_`b'_ur_earnonly.pdf", replace
+	graph export "${results}/earnhh_`b'_ur_earnonly.pdf", replace
 	
 }
 *stop
@@ -141,7 +92,7 @@ foreach y in   uiamt  h_fs_amt h_tanf_amt frp_lunch_value h_wic_amt ssi_amt ss_a
 }
 
 *table A3 
-	esttab  using "$results/d_hhresources_`b'.tex", mtitles("UI" "SNAP" "TANF" "FRPL" "WIC" "SSI" "SS" "Energy" ) ///
+	esttab  using "${results}/d_hhresources_`b'.tex", mtitles("UI" "SNAP" "TANF" "FRPL" "WIC" "SSI" "SS" "Energy" ) ///
 	replace keep( dumspell2 dumspell3 dumspell4 dumspell6  dumspell7 dumspell8 dumspell9 dumspell10 dumspell11 dumspell12 dumspell13 dumspell14 dumspell15 dumspell16 dumspell17 dumspell18) ///
 	se(3) b(3) label star(* 0.10 ** 0.05 *** 0.01) nonum nonotes noconstant ///
 	stats(ymean njl N, labels ("Mean Y Before Job Loss" "N-Job Losers" "N-Observations") fmt(2 0 0))
@@ -156,7 +107,7 @@ coefplot  (d_uiamt, label("Any UI") color(blue)) (d_h_fs_amt, label("Any SNAP") 
  (d_ss_amt, label("Any SS") color(purple) msymbol(plus)) , ///
 vertical keep( dumspell2 dumspell3 dumspell4 dumspell5 dumspell6 dumspell7 dumspell8 dumspell9 dumspell10 dumspell11 dumspell12 dumspell13 dumspell14 dumspell15 dumspell16 dumspell17 dumspell18)  ///
 xtitle("Month Relative to Job Loss") ytitle("Percentage Point Change in Receipt") omitted  
-	graph export "$results/d_hhresources_`b'_ur.png", replace
+	graph export "${results}/d_hhresources_`b'_ur.png", replace
 	
 * figure 2 withOUT confidence intervals
 coefplot  (d_uiamt, label("Any UI") color(blue)) (d_h_fs_amt, label("Any SNAP") color(red) msymbol(square)) ///
@@ -165,7 +116,7 @@ coefplot  (d_uiamt, label("Any UI") color(blue)) (d_h_fs_amt, label("Any SNAP") 
  (d_ss_amt, label("Any SS") color(purple) msymbol(plus)) , ///
 vertical keep( dumspell2 dumspell3 dumspell4 dumspell5 dumspell6 dumspell7 dumspell8 dumspell9 dumspell10 dumspell11 dumspell12 dumspell13 dumspell14 dumspell15 dumspell16 dumspell17 dumspell18)  ///
 xtitle("Month Relative to Job Loss") ytitle("Percentage Point Change in Receipt") omitted noci  ylabel(0(10)80) yscale(range(0(10)50)) 
-	graph export "$results/d_hhresources_`b'_noci_ur.png", replace 
+	graph export "${results}/d_hhresources_`b'_noci_ur.png", replace 
 	
 	
 	
@@ -176,7 +127,7 @@ coefplot (d_h_fs_amt, label("Any SNAP") color(red) msymbol(square)) ///
  (d_ss_amt, label("Any SS") color(purple) msymbol(plus)) , ///
 vertical keep( dumspell2 dumspell3 dumspell4 dumspell5 dumspell6 dumspell7 dumspell8 dumspell9 dumspell10 dumspell11 dumspell12 dumspell13 dumspell14 dumspell15 dumspell16 dumspell17 dumspell18)  ///
 xtitle("Month Relative to Job Loss") ytitle("Percentage Point Change in Receipt") omitted 
-	graph export "$results/d_hhresources_`b'_noui_ur.png", replace 
+	graph export "${results}/d_hhresources_`b'_noui_ur.png", replace 
 	
 * figure 2b withOUT confidence intervals
 coefplot (d_h_fs_amt, label("Any SNAP") color(red) msymbol(square)) ///
@@ -185,7 +136,7 @@ coefplot (d_h_fs_amt, label("Any SNAP") color(red) msymbol(square)) ///
  (d_ss_amt, label("Any SS") color(purple) msymbol(plus)) , ///
 vertical keep( dumspell2 dumspell3 dumspell4 dumspell5 dumspell6 dumspell7 dumspell8 dumspell9 dumspell10 dumspell11 dumspell12 dumspell13 dumspell14 dumspell15 dumspell16 dumspell17 dumspell18)  ///
 xtitle("Month Relative to Job Loss") ytitle("Percentage Point Change in Receipt") omitted noci   ylabel(0(2.5)10) yscale(range(0(2.5)10))
-	graph export "$results/d_hhresources_`b'_noui_noci_ur.png", replace 
+	graph export "${results}/d_hhresources_`b'_noui_noci_ur.png", replace 
 	
 *produces the DD version of figure 2
 foreach y in   uiamt h_fs_amt h_tanf_amt frp_lunch_value h_wic_amt ssi_amt ss_amt { 
@@ -194,7 +145,7 @@ foreach y in   uiamt h_fs_amt h_tanf_amt frp_lunch_value h_wic_amt ssi_amt ss_am
 	sum d_`y' if tenure_1year==1 & head_spouse_partner==1 & `b'==1 & month_reljl<0 & month_reljl~=.
 	estadd scalar ymean = r(mean)
 }
-	esttab  using "$results/d_hhresources_dd_`b'_ur.tex", mtitles("UI" "SNAP" "TANF" "FRPL" "WIC" "SSI" "SS"  "Energy"  ) ///
+	esttab  using "${results}/d_hhresources_dd_`b'_ur.tex", mtitles("UI" "SNAP" "TANF" "FRPL" "WIC" "SSI" "SS"  "Energy"  ) ///
 	replace keep( post) se(3) b(3) label star(* 0.10 ** 0.05 *** 0.01) nonum nonotes noconstant ///
 	stats(ymean N, labels ("Mean Y Before Job Loss" "Observations") fmt(2 0)) 
 	eststo clear
@@ -249,7 +200,7 @@ foreach y in  earn plus_ui plus_fs plus_tanf plus_frpl plus_wic plus_ssi plus_ss
   
 
 *This produces a table version of figure 3, Table A2
-	esttab  using "$results/hhresources_`b'_ur.tex", mtitles("Earnings" "Plus UI" "Plus SNAP" "Plus TANF" "Plus FRPL" "Plus WIC" "Plus SSI" "Plus SS" "Plus Energy") ///
+	esttab  using "${results}/hhresources_`b'_ur.tex", mtitles("Earnings" "Plus UI" "Plus SNAP" "Plus TANF" "Plus FRPL" "Plus WIC" "Plus SSI" "Plus SS" "Plus Energy") ///
 	replace keep( dumspell2 dumspell3 dumspell4 dumspell6  dumspell7 dumspell8 dumspell9 dumspell10 dumspell11 dumspell12 dumspell13 dumspell14 dumspell15 dumspell16 dumspell17 dumspell18) se(3) b(3) label star(* 0.10 ** 0.05 *** 0.01) nonum nonotes noconstant ///
 	stats(ymean njl N, labels ("Mean Y Before Job Loss" "N-Job Losers" "N-Observations") fmt(2 0))
 	eststo clear
@@ -260,7 +211,7 @@ foreach y in  earn plus_ui plus_fs plus_tanf plus_frpl plus_wic plus_ssi plus_ss
 coefplot (earn, label("Earnings") color(black)) , ///
 vertical keep(dumspell1 dumspell2 dumspell3 dumspell4 dumspell5 dumspell6 dumspell7 dumspell8 dumspell9 dumspell10 dumspell11 dumspell12 dumspell13 dumspell14 dumspell15 dumspell16 dumspell17 dumspell18)  ///
 xtitle("Month Relative to Job Loss") ytitle("Change in Dollar Amount") omitted
-	graph export "$results/earn_`b'_ur.png", replace
+	graph export "${results}/earn_`b'_ur.png", replace
 	
 	
 *figure 3 without confidence intervals	
@@ -270,9 +221,7 @@ coefplot (earn, label("Earnings") color(black)) (plus_ui, label("+ UI") color(bl
 ( plus_ss, label("+ SS") color(purple) msymbol(plus)) , ///
 vertical keep( dumspell2 dumspell3 dumspell4 dumspell5 dumspell6 dumspell7 dumspell8 dumspell9 dumspell10 dumspell11 dumspell12 dumspell13 dumspell14 dumspell15 dumspell16 dumspell17 dumspell18)  ///
 xtitle("Month Relative to Job Loss") ytitle("Dollar Amount") omitted noci  ylabel(-3000(1000)500)  yscale(r(-3200(1000)500)) 
-	graph export "$results/hhresources_`b'_noci_ur.png", replace
-
-	
+	graph export "${results}/hhresources_`b'_noci_ur.png", replace
   
 }
 
@@ -330,7 +279,7 @@ coefplot (earn, label("Earnings") color(black)) (plus_ui, label("+ UI") color(bl
 ( plus_ss, label("+ SS") color(purple) msymbol(plus)) , ///
 vertical keep( dumspell2 dumspell3 dumspell4 dumspell5 dumspell6 dumspell7 dumspell8 dumspell9 dumspell10 dumspell11 dumspell12 dumspell13 dumspell14 dumspell15 dumspell16 dumspell17 dumspell18)  ///
 xtitle("Month Relative to Job Loss") ytitle("Dollar Amount") omitted noci  ylabel(-3000(1000)500)  yscale(r(-3000(1000)500))
-	graph export "$results/hhresources_`b'_noci_ur_`layoffperiod'.png", replace
+	graph export "${results}/hhresources_`b'_noci_ur_`layoffperiod'.png", replace
 	
 	}
 	}
@@ -356,7 +305,7 @@ foreach y in  earn uiamt  h_fs_amt h_tanf_amt ss_amt ssi_amt frp_lunch_value h_w
 	sum `y' if tenure_1year==1 & head_spouse_partner==1 & `b'==1 & month_reljl<0 & month_reljl~=.
 	estadd scalar ymean = r(mean)
 }
-	esttab  using "$results/hhresources_dd_`b'_ur.tex", mtitles("Earnings" "Plus UI" "Plus SNAP" "Plus TANF" "Plus SS" "Plus SSI" "Plus FRPL" "Plus WIC") ///
+	esttab  using "${results}/hhresources_dd_`b'_ur.tex", mtitles("Earnings" "Plus UI" "Plus SNAP" "Plus TANF" "Plus SS" "Plus SSI" "Plus FRPL" "Plus WIC") ///
 	replace keep( post) se(3) b(3) label star(* 0.10 ** 0.05 *** 0.01) nonum nonotes noconstant ///
 	stats(ymean N, labels ("Mean Y Before Job Loss" "Observations") fmt(2 0))
 	eststo clear	
@@ -394,7 +343,7 @@ foreach y in hpov_e100 hpov_t100 {
 }
 
 * table A5
-	esttab  using "$results/hh_pov`b'_ur.tex", replace ///
+	esttab  using "${results}/hh_pov`b'_ur.tex", replace ///
 	 keep(  dumspell2 dumspell3 dumspell4   dumspell7 dumspell8 dumspell9 dumspell10 dumspell11 dumspell12 dumspell13 dumspell14 dumspell15 dumspell16 dumspell17 dumspell18) se(3) b(3) label star(* 0.10 ** 0.05 *** 0.01) nonum nonotes noconstant ///
 	mtitles("Earned Income" "Cash Income $+$ Near-Cash Transfers") ///
 	mgroups("$<$100\%", pattern(1 0) prefix(\multicolumn{@span}{c}{) suffix(}) ///
@@ -408,11 +357,8 @@ coefplot  (hpov_e100, label("Household Earned Income / Poverty Threshold") color
 vertical keep( dumspell2 dumspell3 dumspell4 dumspell5 dumspell6 dumspell7 dumspell8 dumspell9 dumspell10 dumspell11 dumspell12 dumspell13 dumspell14 dumspell15 dumspell16 dumspell17 dumspell18)  ///
 xtitle("Month Relative to Job Loss") ytitle("Percentage Point Change") legend(pos(6)) omitted   noci  ///
 ylabel(0(10)30)  yscale(r(0(10)30))
-	graph export "$results/hh_pov_et_`b'_noci_ur.pdf", replace
+	graph export "${results}/hh_pov_et_`b'_noci_ur.pdf", replace
 
 }
-
-	
-log close
 
 	

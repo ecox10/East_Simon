@@ -1,18 +1,20 @@
-/*Filename: state_controls
-Purpose: To create the file state_data.dta that is an input
-  to the later analysis data
-Created by: Chloe East
-Created on: 8/10/21
+/*********************
+File Name: 01a_state_controls.do
 
-*/
+This file creates state_data.dta that is an input to the later analysis data.
 
+By: Chloe East and David Simon
+
+Inputs: ek_data (Kuka UI data)
+Outputs: state_data.dta
+***********************/
 	
 **********************
 *** PREPARE DATA
 **********************
 *** Prepare Simulate Replacement Rates -- these come straight from Elira's JMP so may want to redo with our sample
-use "$ek_outputdata/instrument_sipp_y.dta", clear	
-merge 1:1 year statefip kids using "$ek_rawdata/uilaws_updated_sim.dta"
+use "${ek_data}/instrument_sipp_y.dta", clear	// from Kuka UI data (see readme)
+merge 1:1 year statefip kids using "${ek_data}/uilaws_updated_sim.dta" // from Kuka UI data (see readme)
 keep if _merge==3
 drop _merge
 
@@ -29,7 +31,7 @@ tempfile replrates
 save `replrates', replace
 
 *** Prepare UI benefits data			
-use "$ek_rawdata/uibens_7113.dta", clear
+use "${ek_data}/uibens_7113.dta", clear // from Kuka UI data (see readme)
 
 * Generate extended and emergency benefits
 gen st_extended=fedstebbenefitspaid>0 & fedstebbenefitspaid!=.
@@ -43,9 +45,9 @@ tempfile uibens
 save `uibens', replace
 
 *** Prepare children's Medicaid/CHIP
-use  "$ek_rawdata/st_child_med_8814.dta", replace
+use  "${ek_data}/st_child_med_8814.dta", replace // from Kuka UI data (see readme)
 rename  childthresh pregnthresh
-append using "$ek_rawdata/st_preg_med_8714.dta"
+append using "${ek_data}/st_preg_med_8714.dta" // from Kuka UI data (see readme)
 replace age=-1 if age==.
 rename pregnthresh medthresh
 
@@ -59,11 +61,11 @@ save `medicaid', replace
 **********************
 *** Input unemployment rates
 * Input Urate/Pop
-use "$ek_rawdata/ukcpr_welfare_8015.dta", clear
+use "${ek_data}/ukcpr_welfare_8015.dta", clear // from Kuka UI data (see readme)
 drop if statefip>56 | statefip==43
 
 * Input CPI to create real values
-merge m:1 year using "$ek_rawdata/cpi_6717.dta", gen(cpim)
+merge m:1 year using "${ek_data}/cpi_6717.dta", gen(cpim) // from Kuka UI data (see readme)
 drop if cpim!=3
 drop cpim
 
@@ -109,14 +111,14 @@ drop _merge
 keep if year>=1990 & year<=2015 
 
 *** Welfare reform
-merge 1:1 stfips year using  "$ek_rawdata/st_welfreform_8813.dta"
+merge 1:1 stfips year using  "${ek_data}/st_welfreform_8813.dta" // from Kuka UI data (see readme)
 drop _merge
 keep if year>=1990 & year<=2015 
 replace reform=0 if year>=2013
 
 *** EITC
 rename stfips statefip
-merge m:1 statefip year using  "$ek_rawdata/eitc_vals_8415.dta"
+merge m:1 statefip year using  "${ek_data}/eitc_vals_8415.dta" // from Kuka UI data (see readme)
 drop _merge
 keep if year>=1990 & year<=2015
 
@@ -124,7 +126,7 @@ keep if year>=1990 & year<=2015
 *** MERGE SPENDING DATA
 **********************
 *** Add welfare spending here (data in thousands)
-merge 1:1 statefip year using "$ek_rawdata/welf_spend_6815.dta", keepus(snap eitc tanf medicaid retdi) gen(m_welf) 
+merge 1:1 statefip year using "${ek_data}/welf_spend_6815.dta", keepus(snap eitc tanf medicaid retdi) gen(m_welf) // from Kuka UI data (see readme)
 drop if m_welf==2
 drop m_welf
 keep if year>=1990 & year<=2015
@@ -137,7 +139,7 @@ foreach x in snap eitc tanf medicaid retdi {
 }
 
 *** Add UI data (in Thousands)
-merge 1:1 statefip year using "$ek_rawdata/eta_uifunds_3816.dta"
+merge 1:1 statefip year using "${ek_data}/eta_uifunds_3816.dta" // from Kuka UI data (see readme)
 drop ui_wage ui_aww ui_rr ui_high_co state
 sort statefip year
 keep if year>=1990 & year<=2015
@@ -155,7 +157,7 @@ keep if year>=1990 & year<=2015
 drop _merge
 
 *** Merge wages
-merge 1:1 statefip year using "$ek_rawdata/state_weeklywages.dta", gen(stwages)
+merge 1:1 statefip year using "${ek_data}/state_weeklywages.dta", gen(stwages) // from Kuka UI data (see readme)
 replace avweekwage=avweekwage*2.37017/cpi	
 
 **********************
@@ -197,6 +199,6 @@ label var retdi_pop "SS Spending/Population"
 label var eitc_pop "EITC Spending/Population"
 
 drop if year<1990
-save "$outputdata/state_data.dta", replace
+save "${outdata}/state_data.dta", replace
 
  

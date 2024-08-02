@@ -1,9 +1,8 @@
 *************************************************
 ***************** 		CREATE REGRESSION DATASET		***********************
 			*************************************************
-pause on
 
-use "$samples/sipp_cleaned.dta", clear
+use "${outdata}/sipp_cleaned.dta", clear
 	
 keep if panel>=1996
 egen double uniqueid=group(panel suid pnum female)
@@ -374,11 +373,11 @@ replace wic_rr_p=0.846 if year==2014
 ***************************************
 * add centiles
 egen double incid=group(suid pnum)
-joinby incid year using "$joblessnessdir/SIPP_centiles.dta", unmatched(master) _merge(centile_merge)
+joinby incid year using "${underreporting}/SIPP_centiles.dta", unmatched(master) _merge(centile_merge)
 	
 * add reporting rates 
-joinby inc_centile year using "$results/SIPP_respondent_reporting.dta", unmatched(master) _merge(resp_merge)
-joinby inc_centile year using "$results/SIPP_dollars_reporting.dta", unmatched(master) _merge(dollar_merge)
+joinby inc_centile year using "${underreporting}/SIPP_respondent_reporting.dta", unmatched(master) _merge(resp_merge)
+joinby inc_centile year using "${underreporting}/SIPP_dollars_reporting.dta", unmatched(master) _merge(dollar_merge)
 	
 rename sipp_part_reporting ui_rr_p_irs
 rename sipp_dollars_reporting ui_rr_dol_irs
@@ -504,7 +503,7 @@ bysort hhid year_m wave imonth: gen portA_`x' = (numA_`x'/numA_all)
 *now merge in children
 sort hhid year_m wave imonth
 cap drop _merge
-merge m:1 hhid year_m wave imonth using "$samples/chyeaout.dta"
+merge m:1 hhid year_m wave imonth using "${outdata}/chyeaout.dta"
 
 tab _merge
 drop if _merge==2
@@ -566,7 +565,7 @@ replace tenure_1year2 = tenure_1year if loser==1
 ***************************************	
 * Simulated instruments
 ***************************************
-merge m:1 kids year statefip using "$ek_outputdata/instrument_sipp_y", gen(instm) keepus(sim_repl_sipp*)
+merge m:1 kids year statefip using "${ek_data}/instrument_sipp_y", gen(instm) keepus(sim_repl_sipp*)
 	
 drop if instm==2 // edited, merge==1 is non job loosers, keep these for now.
 drop instm	
@@ -586,22 +585,14 @@ sum loser earn age female hisp white black other lesshs hs somecol college marri
 sum loser earn age female hisp white black other lesshs hs somecol college married kids_sm0  if  head_spouse_partner==1 & wave==1 & refmth==1 & age_sm0>=25 & age_sm0<=54 & templayoff_pre~=1  [aw=p5wgt]
 sum loser earn age female hisp white black other lesshs hs somecol college married kids_sm0  if tenure_1year2==1 & head_spouse_partner==1  & wave==1 & refmth==1 & age_sm0>=25 & age_sm0<=54 & templayoff_pre~=1  [aw=p5wgt]
 
-pause
-	
-*save never losers here for running in 01f_createcontrol	
-save "$samples/summstats.dta", replace 
+save "${outdata}/summstats.dta", replace 
 
-use "$samples/summstats.dta", clear 
+use "${outdata}/summstats.dta", clear 
 
 	
 ***************************************
 ***TABLE A1 REPLICATION *******
 ***************************************
-* log file that outputs summary stats
-cap log close
-
-log using "$outputlog/summtab1_`today'.log", replace
-
 
 * column 1 : All job losers 
 sum earn age female hisp white black other lesshs hs somecol college married kids_m0  if  head_spouse_partner==1 & month_reljl==-4 & age_sm0>=25 & age_sm0<=54 & templayoff_pre~=1 & loser==1 [aw=p5wgt]
@@ -622,7 +613,7 @@ sum  earn age female hisp white black other lesshs hs somecol college married ki
 preserve
 	
 keep if loser==0
-save "$samples/controlsetup.dta", replace
+save "${outdata}/controlsetup.dta", replace
 	
 restore
 
@@ -660,12 +651,9 @@ sum earn age female hisp white black other lesshs hs somecol college married kid
 sum earn age female hisp white black other lesshs hs somecol college married kids_m0 hpov100 if tenure_1year==1 & head_spouse_partner==1  & month_reljl==-4 & age_sm0>=25 & age_sm0<=54 & templayoff_pre~=1 & loser==1 & uismp~=1 [aw=p5wgt]
 
 
-log close
-
 ***************************************
 *** Other Summary Statistics *******
 ***************************************
-log using "$outputlog/01_CleanData_part2_`today'.log", replace
    
 * Keep only those with at least one spell
 keep if loser==1
@@ -685,7 +673,6 @@ sum earn age female hisp white black other lesshs hs somecol college married kid
 	
 sum earn age female hisp white black other lesshs hs somecol college married kids_m0  if  head_spouse_partner==1 & wave==1 & refmth==1 & age_sm0>=25 & age_sm0<=54 & templayoff_pre~=1  [aw=p5wgt]
 sum earn age female hisp white black other lesshs hs somecol college married kids_m0  if tenure_1year==1 & head_spouse_partner==1  & wave==1 & refmth==1 & age_sm0>=25 & age_sm0<=54  & templayoff_pre~=1  [aw=p5wgt]
-pause
 
 ***************************************	
 * Create month in which spell occurred 
@@ -793,8 +780,6 @@ sum age female black hisp college married kids_m0   if tenure_1year==1 & month_r
 mdesc work uiamt priv_hins any_hins pub_hins ss_amt  h_ss_amt ssi_amt  ssi_st_amt h_ssi_amt fs_amt tanf_amt ///
 wic_amt frp_lunch  hinc hearn hpov100 hpov200 hpov400
 
-pause
-
 drop if work==. // observations just from policy data and not merged into SIPP
 
 rename head_spouse head_spouse_current  
@@ -899,6 +884,4 @@ replace d_frp_lunch_value = d_frp_lunch_value*100
 // cpi
 for any frp_lunch_value : replace X=X*237.017/cpi
 
-save "$samples/sipp_reg.dta", replace 
-	
-log close 
+save "${outdata}/sipp_reg.dta", replace 

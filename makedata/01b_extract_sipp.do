@@ -260,5 +260,5 @@ keep ssuseq ssuid eentaid shhadid spanel swave srotaton srefmon rhcalmn rhcalyr 
 	}       
 
 	compress
-	save "$outputdata/sipp_annual`syear'", replace
+	save "${outdata}/sipp_annual`syear'", replace
 }

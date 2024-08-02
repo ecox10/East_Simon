@@ -6,7 +6,6 @@
 ********************
 
 
-capture log close
 clear all
 cap clear matrix
 cap clear mata
@@ -15,60 +14,7 @@ set maxvar 30000
 set more off, permanently
 
 
-*********************************************************************
-/* DIRECTORY AND FILE NAMES: */  
-clear all 
-
-
-if c(username)=="chloeeast" {  		// for Chloe's computer
-	global dir "/Users/chloeeast/Dropbox/"	 	 	
-	global dofiles"/Users/chloeeast/Documents/GitHub/JobLosers_SafetyNet/makedata"	 	 	
-} 
-else if c(username)=="Chloe" {  		// for Chloe's laptop
-	global dir "/Users/Chloe/Dropbox"
-} 
-else if c(username)=="davidsimon" {  //for David's laptop
-	global dir "/Users/davidsimon/Dropbox/Research and Referee work/papers/Under Review"
-	global dofiles "/Users/davidsimon/Documents/GitHub/East_Simon/makedata"
-}
-else if c(username)=="elizabeth" { // Ellie's laptop
-	global dir "/Users/elizabeth/Dropbox"
-	global dofiles "/Users/elizabeth/Documents/GitHub/East_Simon/makedata"
-}
-
-if c(username)=="das13016" {  //for David's laptop
-	global rawdata "$dir/Intergen Sipp/rawdata"
-	global outputdata "C:\Users\das13016\Dropbox\Research and Referee work\papers\Under Review\Intergen Sipp\child SIPP longterm\analysis\output\JobLosers_SafetyNet"
-	global samples "$dir/Intergen Sipp/child SIPP longterm/analysis/samples/JobLosers_SafetyNet/"
-	global ek_rawdata "$dir/child SIPP longterm/literature/Jobloss Papers/Elira_JMP_datafiles/Data/Raw/StateYear"
-	global ek_outputdata "$dir\child SIPP longterm\literature\Jobloss Papers\Elira_JMP_datafiles\Data\RegData\"
-	global outputlog "/Users/davidsimon/Documents/GitHub/East_Simon/logs"
-	global results "$dir/Intergen Sipp/child SIPP longterm/analysis/output/JobLosers_SafetyNet/"
-}
-if c(username)=="chloeeast" | c(username)=="Chloe"   {
-	global rawdata "$dir/rawdata"
-	global rv_outputdata "/Users/chloeeast/Dropbox/child SIPP longterm/analysis/dofiles/jobloss/Aux data and setupcode/Safety Net Calculators"
-	global outputdata "$dir/child SIPP longterm//analysis/samples"
-	global samples "$dir/child SIPP longterm/analysis/samples/JobLosers_SafetyNet/"
-	global ek_rawdata "$dir/child SIPP longterm/literature/Jobloss Papers/Elira_JMP_datafiles/Data/Raw/StateYear"
-	global ek_outputdata "$dir/child SIPP longterm/literature/Jobloss Papers/Elira_JMP_datafiles/Data/RegData/"
-	global outputlog "/Users/chloeeast/Documents/GitHub/East_Simon/logs"
-	global results "$dir/child SIPP longterm/analysis/output/JobLosers_SafetyNet"
-}
-if c(username)=="elizabeth" {
-	global rv_outputdata "$dir/child SIPP longterm/analysis/dofiles/jobloss/Aux data and setupcode/Safety Net Calculators"
-	global outputdata "$dir/child SIPP longterm//analysis/samples"
-	global samples "$dir/child SIPP longterm/analysis/samples/JobLosers_SafetyNet"
-	global ek_rawdata "$dir/child SIPP longterm/literature/Jobloss Papers/Elira_JMP_datafiles/Data/Raw/StateYear"
-	global ek_outputdata "$dir/child SIPP longterm/literature/Jobloss Papers/Elira_JMP_datafiles/Data/RegData"
-	global outputlog "/Users/elizabeth/Documents/GitHub/East_Simon/logs"
-	global results "$dir/child SIPP longterm/analysis/output/JobLosers_SafetyNet"
-}
-
-*******
-log using "$outputdata/finalcleaning.log", replace	
-
-use "$samples/sipp_reg.dta", clear 
+use "${outdata}/sipp_reg.dta", clear 
 
 * limit age at time of jobloss to 25-54
 keep if age_m0>=25 & age_m0<=54  
@@ -401,7 +347,5 @@ label var dumspell17 " 20"
 label var dumspell18 " 22"
 
 
-save "$samples/regfinal.dta", replace 
+save "${outdata}/regfinal.dta", replace 
 	
-	
-log close

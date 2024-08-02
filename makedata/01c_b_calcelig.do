@@ -1,5 +1,6 @@
-/* Created on: 1/4/2014
-Last Modified: 4/01/2017
+/*
+***********************
+Created on: 1/4/2014
 
 This file assigns UI eligibility according to wages.
 File taken and updated from Chetty's UI calculator. Chetty's went from 1984-1994, but I need to

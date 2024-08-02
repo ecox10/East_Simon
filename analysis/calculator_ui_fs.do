@@ -1,67 +1,26 @@
-*=================================
-*  UI and SNAP Calculators 
-* Updated by EC: 4/5/2024
-*=================================
-* This file uses the final reg dataset created in 01h_finalcleaning.do to calculate estimated 
-* UI and SNAP benefit amounts to assess policy implications. 
+/*********************
+File Name: calculator_ui_fs.do
+
+This do file calculates the underlying numbers for calculated UI and FS amounts. 
+This file is divided into two sections 1) UI calculator and 2) SNAP calculator. Each 
+section implements our calculator, and then does the DiD regression. Produces results
+in the paper:
+"The safety net and job loss: How much insurance do public programs provide?" 
+
+By: Chloe East and David Simon
+
+Inputs: regfinal.dta, eui_state_08-14.dta (Kuka UI data), and snap_parameters_1980-2023_updated2023.xlsx (spreadsheet from Tara Watson)
+Outputs: hhresources_dd_`hpovbin'_sim_UI_ur.tex, hhresources_dd_`hpovbin'_sim_SNAP_ur.tex
+***********************/
 
 net install scheme-modern, from("https://raw.githubusercontent.com/mdroste/stata-scheme-modern/master/")
 set scheme modern
-
-*********************************************************************
-/* DIRECTORY AND FILE NAMES: */  
-clear all 
-
-if c(username)=="chloeeast" {  		// for Chloe's computer
-	global dir "/Users/chloeeast/Dropbox/"	 	 	
-	global dofiles"/Users/chloeeast/Documents/GitHub/East_Simon/makedata"	 	 	
-} 
-else if c(username)=="Chloe" {  		// for Chloe's laptop
-	global dir "/Users/Chloe/Dropbox"
-} 
-else if c(username)=="davidsimon" {  //for David's laptop
-	global dir "/Users/davidsimon/Dropbox/Research and Referee work/papers/Under Review"
-	global dofiles "/Users/davidsimon/Documents/GitHub/East_Simon/makedata"
-}
-else if c(username)=="elizabeth" { // Ellie's laptop
-	global dir "/Users/elizabeth/Dropbox"
-	global dofiles "/Users/elizabeth/Documents/GitHub/East_Simon/makedata"
-}
-
-if c(username)=="das13016" {  //for David's laptop
-	global rawdata "$dir/Intergen Sipp/rawdata"
-	global outputdata "C:\Users\das13016\Dropbox\Research and Referee work\papers\Under Review\Intergen Sipp\child SIPP longterm\analysis\output\JobLosers_SafetyNet"
-	global samples "$dir/Intergen Sipp/child SIPP longterm/analysis/samples/JobLosers_SafetyNet/"
-	global ek_rawdata "$dir/child SIPP longterm/literature/Jobloss Papers/Elira_JMP_datafiles/Data/Raw/StateYear"
-	global ek_outputdata "$dir\child SIPP longterm\literature\Jobloss Papers\Elira_JMP_datafiles\Data\RegData\"
-	global outputlog "/Users/davidsimon/Documents/GitHub/East_Simon/logs"
-	global results "$dir/Intergen Sipp/child SIPP longterm/analysis/output/JobLosers_SafetyNet/"
-}
-if c(username)=="chloeeast" | c(username)=="Chloe"   {
-	global rawdata "$dir/rawdata"
-	global rv_outputdata "/Users/chloeeast/Dropbox/child SIPP longterm/analysis/dofiles/jobloss/Aux data and setupcode/Safety Net Calculators"
-	global outputdata "$dir/child SIPP longterm//analysis/samples"
-	global samples "$dir/child SIPP longterm/analysis/samples/JobLosers_SafetyNet/"
-	global ek_rawdata "$dir/child SIPP longterm/literature/Jobloss Papers/Elira_JMP_datafiles/Data/Raw/StateYear"
-	global ek_outputdata "$dir/child SIPP longterm/literature/Jobloss Papers/Elira_JMP_datafiles/Data/RegData/"
-	global outputlog "/Users/chloeeast/Documents/GitHub/East_Simon/logs"
-	global results "$dir/child SIPP longterm/analysis/output/JobLosers_SafetyNet"
-}
-if c(username)=="elizabeth" {
-	global rv_outputdata "$dir/child SIPP longterm/analysis/dofiles/jobloss/Aux data and setupcode/Safety Net Calculators"
-	global outputdata "$dir/child SIPP longterm//analysis/samples"
-	global samples "$dir/child SIPP longterm/analysis/samples/JobLosers_SafetyNet"
-	global ek_rawdata "$dir/child SIPP longterm/literature/Jobloss Papers/Elira_JMP_datafiles/Data/Raw/StateYear"
-	global ek_outputdata "$dir/child SIPP longterm/literature/Jobloss Papers/Elira_JMP_datafiles/Data/RegData"
-	global outputlog "/Users/elizabeth/Documents/GitHub/East_Simon/logs"
-	global results "$dir/child SIPP longterm/analysis/output/JobLosers_SafetyNet"
-}
 
 *=================================
 *  UI Calculator 
 *=================================
 
-use "$samples/regfinal.dta", clear 
+use "${outdata}/regfinal.dta", clear 
 
 * calculate repeat job losers
 gen repeat_loser = loss if loss > 0 & month_reljl > 0 // only keeps the 1's after 1st job loss (will be 1's and .'s)
@@ -87,7 +46,7 @@ bysort uniqueid: replace year_m0 = year_m0[1]
 
 * Add weeks of UI benefit data 
 preserve 
-use "$dir/child SIPP longterm/analysis/dofiles/jobloss/Aux data and setupcode/Safety Net Calculators/Rothstein_Valetta_UI_Weeks_Calc/eui_state_08-14.dta", clear
+use "${ek_data}/eui_state_08-14.dta", clear
 rename fips fips_m0 
 rename year year_m0
 rename month month_m0
@@ -155,28 +114,8 @@ foreach y in earn uiamt_ur sim_ui sim_ui_allelig h_fs_amt_ur h_tanf_amt_ur ss_am
 	sum `y' if tenure_1year==1 & head_spouse_partner==1 & `b'==1 & month_reljl<0 & month_reljl~=.
 	estadd scalar ymean = r(mean)
 }
-	esttab  using "$results/hhresources_dd_`b'_sim_UI_ur.tex", mtitles( "Earnings" "UI" "Sim UI" "Sim UI - all eligible" "SNAP" "TANF" "SS" "SSI" "FRPL" "WIC"  "Energy"  ) ///
+	esttab  using "${results}/hhresources_dd_`b'_sim_UI_ur.tex", mtitles( "Earnings" "UI" "Sim UI" "Sim UI - all eligible" "SNAP" "TANF" "SS" "SSI" "FRPL" "WIC"  "Energy"  ) ///
 	replace keep( post) se(3) b(3) label star(* 0.10 ** 0.05 *** 0.01) nonum nonotes noconstant ///
-	stats(ymean N, labels ("Mean Y Before Job Loss" "Observations") fmt(2 0))
-	eststo clear	
-	}	
-	
-* calculated UI results - first 2 months and last 2 months
-foreach b in  all hpov_sm0_100_ur hpov_sm0_100200_ur hpov_sm0_200300_ur hpov_sm0_300400_ur hpov_sm0_400500_ur hpov_sm0_500600_ur hpov_sm0_600700_ur hpov_sm0_700800_ur hpov_sm0_800pl_ur  { 
- estimates clear 
-	eststo clear
-foreach y in earn uiamt_ur sim_ui sim_ui_allelig h_fs_amt_ur h_tanf_amt_ur ss_amt_ur ssi_amt_ur frp_lunch_value_ur h_wic_amt_ur { 
-	eststo: xi: xtreg `y' post0 post1 post2 ///
-	i.age i.yearmonth if tenure_1year==1 & head_spouse_partner==1 & `b'==1 [pw=p5wgt_m0], fe vce(cluster uniqueid)	
-	sum `y' if tenure_1year==1 & head_spouse_partner==1 & `b'==1 & month_reljl<0 & month_reljl~=.
-	estadd scalar ymean = r(mean)
-}
-	esttab  using "$results/hhresources_dd_`b'_sim_UI_2mo_ur.tex", mtitles( "Earnings" "UI" "Sim UI" "Sim UI - all eligible" "SNAP" "TANF" "SS" "SSI" "FRPL" "WIC"  "Energy"  ) ///
-	replace keep( post0) se(3) b(3) label star(* 0.10 ** 0.05 *** 0.01) nonum nonotes noconstant ///
-	stats(ymean N, labels ("Mean Y Before Job Loss" "Observations") fmt(2 0))	
-	
-	esttab  using "$results/hhresources_dd_`b'_sim_UI_22mo_ur.tex", mtitles( "Earnings" "UI" "Sim UI" "Sim UI - all eligible" "SNAP" "TANF" "SS" "SSI" "FRPL" "WIC"  "Energy"  ) ///
-	replace keep( post2) se(3) b(3) label star(* 0.10 ** 0.05 *** 0.01) nonum nonotes noconstant ///
 	stats(ymean N, labels ("Mean Y Before Job Loss" "Observations") fmt(2 0))
 	eststo clear	
 	}	
@@ -189,7 +128,7 @@ foreach y in earn uiamt_ur sim_ui sim_ui_allelig h_fs_amt_ur h_tanf_amt_ur ss_am
 * modified procedure from https://www.cbpp.org/research/food-assistance/a-quick-guide-to-snap-eligibility-and-benefits 
 * with adjustments to use benefit amounts from Tara Watson at brookings
 
-use "$samples/regfinal.dta", clear 
+use "${outdata}/regfinal.dta", clear 
 
 * step 1: estimate snap eligibility using the poverty ratio
 gen fs_eligible = (hinc<1.3*hpov)
@@ -198,21 +137,20 @@ gen fs_eligible = (hinc<1.3*hpov)
 	* continental us
 preserve 
 
-import excel "/Users/elizabeth/Dropbox/Other Stuff for Chloe/Jobloss/snap_parameters_1980-2023_updated2023.xlsx", clear firstrow ///
-sheet("snap continental us")
+import excel "${snapdata}/snap_parameters_1980-2023_updated2023.xlsx", clear firstrow sheet("snap continental us") // Data from Tara Watson at Brookings (we don't have permission to share)
 rename snapfiscalyearfiscalyearX year_m 
 rename familysize hnp
 
-save "/Users/elizabeth/Dropbox/Other Stuff for Chloe/Jobloss/snap_parameters_1980-2023_updated2023.dta", replace 
+save "${snapdata}/snap_parameters_1980-2023_updated2023.dta", replace 
 restore 
 
-merge m:1 year_m hnp using "/Users/elizabeth/Dropbox/Other Stuff for Chloe/Jobloss/snap_parameters_1980-2023_updated2023.dta"
+merge m:1 year_m hnp using "${snapdata}/snap_parameters_1980-2023_updated2023.dta"
 drop if _merge != 3
 
 	* ak and hi
 preserve 
 
-import excel "/Users/elizabeth/Dropbox/Other Stuff for Chloe/Jobloss/snap_parameters_1980-2023_updated2023.xlsx", clear firstrow ///
+import excel "${snapdata}/snap_parameters_1980-2023_updated2023.xlsx", clear firstrow ///
 sheet("snap ak hi")
 rename snapfiscalyearfiscalyearX year_m 
 rename familysize hnp
@@ -222,11 +160,11 @@ rename standarddeduction standarddeduction_akhi
 * drop 1986 duplicate - this year isn't in the sipp data so this shouldn't matter 
 duplicates drop year_m hnp statefip_m, force
 
-save "/Users/elizabeth/Dropbox/Other Stuff for Chloe/Jobloss/snap_parameters_1980-2023_updated2023_akhi.dta", replace 
+save "${snapdata}/snap_parameters_1980-2023_updated2023_akhi.dta", replace 
 restore 
 
 drop _merge
-merge m:1 year_m hnp statefip_m using "/Users/elizabeth/Dropbox/Other Stuff for Chloe/Jobloss/snap_parameters_1980-2023_updated2023_akhi.dta"
+merge m:1 year_m hnp statefip_m using "${snapdata}/snap_parameters_1980-2023_updated2023_akhi.dta"
 
 
 * step 3: subtract standard adjustment from gross income
@@ -315,29 +253,9 @@ foreach y in earn h_fs_amt_ur sim_snap fs_max uiamt_ur h_tanf_amt_ur ss_amt_ur s
 	sum `y' if tenure_1year==1 & head_spouse_partner==1 & `b'==1 & month_reljl<0 & month_reljl~=. 
 	estadd scalar ymean = r(mean)
 }
-	esttab  using "$results/hhresources_dd_`b'_sim_SNAP_ur.tex", mtitles("Earnings" "SNAP" "Sim SNAP" "Sim SNAP - max benefits" "UI" "TANF" "SS" "SSI" "FRPL" "WIC"  "Energy"  ) ///
+	esttab  using "${results}/hhresources_dd_`b'_sim_SNAP_ur.tex", mtitles("Earnings" "SNAP" "Sim SNAP" "Sim SNAP - max benefits" "UI" "TANF" "SS" "SSI" "FRPL" "WIC"  "Energy"  ) ///
 	replace keep( post ) se(3) b(3) label star(* 0.10 ** 0.05 *** 0.01) nonum nonotes noconstant ///
 	stats(ymean N, labels ("Mean Y Before Job Loss" "Observations") fmt(2 0))
 	eststo clear	
 	}	
-	
-* calculated SNAP results - first 2 months and last 2 months
-foreach b in all hpov_sm0_100_ur hpov_sm0_100200_ur hpov_sm0_200300_ur hpov_sm0_300400_ur hpov_sm0_400500_ur hpov_sm0_500600_ur hpov_sm0_600700_ur hpov_sm0_700800_ur hpov_sm0_800pl_ur { 
- estimates clear 
-	eststo clear
-foreach y in earn h_fs_amt_ur sim_snap fs_max uiamt_ur h_tanf_amt_ur ss_amt_ur ssi_amt_ur frp_lunch_value_ur h_wic_amt_ur { 
-	eststo: xi: xtreg `y' post0 post1 post2 ///
-	i.age i.yearmonth if tenure_1year==1 & head_spouse_partner==1 & `b'==1 [pw=p5wgt_m0], fe vce(cluster uniqueid)	
-	sum `y' if tenure_1year==1 & head_spouse_partner==1 & `b'==1 & month_reljl<0 & month_reljl~=. 
-	estadd scalar ymean = r(mean)
-}
-	esttab  using "$results/hhresources_dd_`b'_sim_SNAP_2mo_ur.tex", mtitles("Earnings" "SNAP" "Sim SNAP" "Sim SNAP - max benefits" "UI" "TANF" "SS" "SSI" "FRPL" "WIC"  "Energy"  ) ///
-	replace keep( post0 ) se(3) b(3) label star(* 0.10 ** 0.05 *** 0.01) nonum nonotes noconstant ///
-	stats(ymean N, labels ("Mean Y Before Job Loss" "Observations") fmt(2 0))
-	
-	esttab  using "$results/hhresources_dd_`b'_sim_SNAP_22mo_ur.tex", mtitles("Earnings" "SNAP" "Sim SNAP" "Sim SNAP - max benefits" "UI" "TANF" "SS" "SSI" "FRPL" "WIC"  "Energy"  ) ///
-	replace keep( post2 ) se(3) b(3) label star(* 0.10 ** 0.05 *** 0.01) nonum nonotes noconstant ///
-	stats(ymean N, labels ("Mean Y Before Job Loss" "Observations") fmt(2 0))
-	eststo clear
-	}
 	
