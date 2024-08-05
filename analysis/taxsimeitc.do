@@ -98,7 +98,8 @@ restore
 
 sort statefip_m0
 merge m:1 statefip_m0 using `statecw'
-rename state statename
+rename state statename 
+rename statefoi state
 drop _merge
 
 *taxsim outputs to current directory, change to samples for now
@@ -113,7 +114,7 @@ order uniqueid taxsimid
 preserve 
 sort taxsimid
 
-keep taxsimid mstat year pwages swages state  dep18 dep17 depx
+keep taxsimid mstat year pwages swages state dep18 dep17 depx
 taxsim35, full 
 use taxsim_out.dta, replace
 sort taxsimid
