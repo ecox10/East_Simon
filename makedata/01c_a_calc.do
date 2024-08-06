@@ -84,19 +84,24 @@ gen state=0
 for any annwg bpw hq1w hq2w qearn_l1 qearn_l2: replace X=0 if X==.
 
 * For TAXSIM Calculator
+cd "$outdata"
 gen pwages = annwg
 
-gen id = _n
+gen taxsimid=_n
+order taxsimid
+
 preserve 
-keep id year state mstat pwages 
-taxsim35, replace
-sort id 
-tempfile taxsimtemp 
-save `taxsimtemp', replace 
-restore 
-	
-sort id 
-merge id using `taxsimtemp'
+sort taxsimid
+
+keep taxsimid year state mstat pwages 
+taxsim35, full 
+use taxsim_out.dta, replace
+sort taxsimid
+save taxsim_out.dta, replace
+restore
+
+sort taxsimid 
+merge taxsimid using taxsim_out.dta
 	
 gen tao = fiitax/annwg
 replace tao=0 if tao==.
