@@ -305,13 +305,6 @@ foreach y in  earn uiamt  h_fs_amt h_tanf_amt ss_amt ssi_amt frp_lunch_value h_w
 	}
 
 	
-	
-*******************************************************************************
-*** POVERTY RESULTS***
-*** 
-*** ADJUSTED FOR UNDER-REPORTING ***
-*******************************************************************************
-
 
 *************************
 * Figure 6 and Table A5-  household poverty with and without safety net. 
