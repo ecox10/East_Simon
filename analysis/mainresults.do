@@ -63,7 +63,7 @@ xtitle("Month Relative to Job Loss") ytitle("Change in Dollar Amount") omitted
 	graph export "${results}/earnhh_`b'_ur_earnonly.pdf", replace
 	
 }
-*stop
+
 
 
 
@@ -76,7 +76,7 @@ foreach b in all   {
 
  estimates clear 
 	
-* produces the results for whethe received benefits from each program instead of benefit amount
+* produces the results for whether received benefits from each program instead of benefit amount
 foreach y in   uiamt  h_fs_amt h_tanf_amt frp_lunch_value h_wic_amt ssi_amt ss_amt {  
 	eststo: xi: xtreg d_`y'_ur dumspell1 dumspell2 dumspell3 dumspell4 dumspell5 dumspell6 dumspell7 dumspell8 dumspell9 dumspell10 dumspell11 dumspell12 dumspell13 dumspell14 dumspell15 dumspell16 dumspell17 dumspell18 ///
 	i.age i.yearmonth if tenure_1year==1 & head_spouse_partner==1 & `b'==1 [pw=p5wgt_m0], fe vce(cluster uniqueid)	
@@ -284,13 +284,6 @@ xtitle("Month Relative to Job Loss") ytitle("Dollar Amount") omitted noci  ylabe
 	}
 	}
 	
-*******************************************************************************
-*** Difference-in-differences: Estimates of Safety Net Program Value, 1 YEAR JOB TENURE - SIPP ***
-***
-*** Full Sample and Subgroups ***
-*** Adjust for Under-Reporting ***
-*******************************************************************************
-
 ****************************
 *  Figure 5 - table results by poverty ratio and other heterogeneity, adjusting for under-reporting Meyer
 ****************************
