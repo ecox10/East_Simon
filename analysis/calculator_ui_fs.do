@@ -7,6 +7,8 @@ section implements our calculator, and then does the DiD regression. Produces re
 in the paper:
 "The safety net and job loss: How much insurance do public programs provide?" 
 
+Creates Figure 7 panels A and B in the paper.
+
 By: Chloe East and David Simon
 
 Inputs: regfinal.dta, eui_state_08-14.dta (Kuka UI data), and snap_parameters_1980-2023_updated2023.xlsx (spreadsheet from Tara Watson)
@@ -103,7 +105,7 @@ tab repeat_loser if month_reljl == 0 // adding "if month_reljl == 0" selects job
 tab repeat_loser if ui_weeks_99 == 1 & month_reljl == 0	
 
 **************************	
-* Figure 7 panel (b) - results in tex table
+* Figure 7 panel (A) - results in tex table
 ***************************
 foreach b in  all hpov_sm0_100_ur hpov_sm0_100200_ur hpov_sm0_200300_ur hpov_sm0_300400_ur hpov_sm0_400500_ur hpov_sm0_500600_ur hpov_sm0_600700_ur hpov_sm0_700800_ur hpov_sm0_800pl_ur  { 
  estimates clear 
