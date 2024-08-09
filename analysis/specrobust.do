@@ -57,7 +57,7 @@ foreach y in  earn uiamt  h_fs_amt h_tanf_amt ss_amt ssi_amt frp_lunch_value h_w
 ************************************************************	
 
 ****************************
-* Figure A10 (a)
+* Figure A7 (a)
 ****************************
 
 estimates clear 
@@ -75,7 +75,7 @@ foreach y in  earn plus_ui plus_fs plus_tanf plus_frpl plus_wic plus_ssi plus_ss
 }
 
 	
-*figure A10	(a)
+*figure A7	(a)
 	coefplot (earn, label("Earnings") color(black)) (plus_ui, label("+ UI") color(blue)) (plus_fs, label("+ SNAP") color(red) msymbol(square)) ///
 (plus_tanf, label("+ TANF") color(orange) msymbol(triangle)) (plus_frpl, label("+ FRPL") color(midgreen)) ///
 (plus_wic , label("+ WIC") color(dkgreen) msymbol(square)) (plus_ssi , label("+ SSI") color(sienna)) /// 
@@ -84,7 +84,7 @@ vertical keep( dumspell2 dumspell3 dumspell4 dumspell5 dumspell6 dumspell7 dumsp
 xtitle("Month Relative to Job Loss") ytitle("Dollar Amount") omitted
 	graph export "${results}/hhresources_`b'_nofe_ur.pdf", replace
 	
-*figure A10 (a) without confidence intervals	
+*figure A7 (a) without confidence intervals	
 coefplot (earn, label("Earnings") color(black)) (plus_ui, label("+ UI") color(blue)) (plus_fs, label("+ SNAP") color(red) msymbol(square)) ///
 (plus_tanf, label("+ TANF") color(orange) msymbol(triangle)) (plus_frpl, label("+ FRPL") color(midgreen)) ///
 (plus_wic , label("+ WIC") color(dkgreen) msymbol(square)) (plus_ssi , label("+ SSI") color(sienna)) /// 
